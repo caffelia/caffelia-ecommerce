@@ -1,0 +1,67 @@
+
+services:
+  # MySQL 8.0 - Bagisto's preferred database
+  database:
+    image: mysql:8.0.39
+    container_name: cafelia-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: cafelia_ecommerce
+      MYSQL_USER: bagisto
+      MYSQL_PASSWORD: secret123
+      MYSQL_ALLOW_EMPTY_PASSWORD: 0
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "bagisto", "-psecret123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - cafelia-network
+
+  # Redis 7.4.3 - For caching and sessions
+  redis:
+    image: redis:7.4.3-alpine
+    container_name: cafelia-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    networks:
+      - cafelia-network
+
+  # Mailpit - For local email testing
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: cafelia-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - cafelia-network
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  cafelia-network:
+    driver: bridge
