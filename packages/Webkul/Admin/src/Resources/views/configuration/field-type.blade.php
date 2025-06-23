@@ -17,7 +17,7 @@
         validations="{{ $field->getValidations() }}"
         is-require="{{ $field->isRequired() }}"
         depend-name="{{ $field->getDependFieldName() }}"
-        src="{{ Storage::url($value) }}"
+        src="{{ $value ? Storage::url($value) : '' }}"
         field-data="{{ json_encode($field) }}"
         channel-count="{{ $channels->count() }}"
         current-channel="{{ $currentChannel }}"
@@ -36,7 +36,7 @@
     >
         <x-admin::form.control-group class="last:!mb-0">
             <!-- Title of the input field -->
-            <div    
+            <div
                 v-if="field.is_visible"
                 class="flex justify-between"
             >
@@ -49,7 +49,7 @@
                         v-text="JSON.parse(currentChannel).name"
                     >
                     </span>
-        
+
                     <span
                         v-if="field['locale_based']"
                         class="rounded border border-gray-200 bg-gray-100 px-1 py-0.5 text-[10px] font-semibold leading-normal text-gray-600"
@@ -58,7 +58,7 @@
                     </span>
                 </x-admin::form.control-group.label>
             </div>
-        
+
             <!-- Text input -->
             <template v-if="field.type == 'text' && field.is_visible">
                 <x-admin::form.control-group.control
@@ -70,7 +70,7 @@
                     ::label="label"
                 />
             </template>
-        
+
             <!-- Password input -->
             <template v-if="field.type == 'password' && field.is_visible">
                 <x-admin::form.control-group.control
@@ -82,7 +82,7 @@
                     ::label="label"
                 />
             </template>
-        
+
             <!-- Number input -->
             <template v-if="field.type == 'number' && field.is_visible">
                 <x-admin::form.control-group.control
@@ -114,7 +114,7 @@
                     />
                 </v-field>
             </template>
-        
+
             <!-- Textarea Input -->
             <template v-if="field.type == 'textarea' && field.is_visible">
                 <x-admin::form.control-group.control
@@ -149,7 +149,7 @@
                     />
                 </v-field>
             </template>
-        
+
             <!-- Select input -->
             <template v-if="field.type == 'select' && field.is_visible">
                 <v-field
@@ -204,7 +204,7 @@
                     </select>
                 </v-field>
             </template>
-           
+
             <!-- Boolean/Switch input -->
             <template v-if="field.type == 'boolean' && field.is_visible">
                 <input
@@ -212,9 +212,9 @@
                     :name="name"
                     :value="0"
                 />
-        
+
                 <label class="relative inline-flex cursor-pointer items-center">
-                    <input  
+                    <input
                         type="checkbox"
                         :name="name"
                         :value="1"
@@ -226,7 +226,7 @@
                     <div class="peer h-5 w-9 cursor-pointer rounded-full bg-gray-200 after:absolute after:top-0.5 after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-blue-300 dark:bg-gray-800 dark:after:border-white dark:after:bg-white dark:peer-checked:bg-gray-950 after:ltr:left-0.5 peer-checked:after:ltr:translate-x-full after:rtl:right-0.5 peer-checked:after:rtl:-translate-x-full"></div>
                 </label>
             </template>
-        
+
             <template v-if="field.type == 'image' && field.is_visible">
                 <div class="flex items-center justify-center">
                     <a
@@ -240,7 +240,7 @@
                             class="top-15 rounded-3 border-3 relative h-[33px] w-[33px] border-gray-500 ltr:mr-5 rtl:ml-5"
                         />
                     </a>
-                    
+
                     <x-admin::form.control-group.control
                         type="file"
                         ::name="name"
@@ -249,7 +249,7 @@
                         ::label="label"
                     />
                 </div>
-        
+
                 <template v-if="value">
                     <x-admin::form.control-group class="mt-1.5 flex w-max cursor-pointer select-none items-center gap-1.5">
                         <x-admin::form.control-group.control
@@ -259,7 +259,7 @@
                             value="1"
                             ::for="`${name}[delete]`"
                         />
-        
+
                         <label
                             :for="`${name}[delete]`"
                             class="cursor-pointer !text-sm !font-semibold !text-gray-600 dark:!text-gray-300"
@@ -279,7 +279,7 @@
                         <i class="icon-down-stat text-2xl"></i>
                     </div>
                 </a>
-        
+
                 <x-admin::form.control-group.control
                     type="file"
                     ::id="name"
@@ -287,7 +287,7 @@
                     ::rules="validations"
                     ::label="label"
                 />
-        
+
                 <template v-if="value">
                     <div class="flex cursor-pointer gap-2.5">
                         <x-admin::form.control-group.control
@@ -296,7 +296,7 @@
                             ::name="`${name}[delete]`"
                             value="1"
                         />
-        
+
                         <label
                             class="cursor-pointer"
                             ::for="`${name}[delete]`"
@@ -323,7 +323,7 @@
                                 <option value="">
                                     @lang('admin::app.configuration.index.select-country')
                                 </option>
-        
+
                                 @foreach (core()->countries() as $country)
                                     <option value="{{ $country->code }}">
                                         {{ $country->name }}
@@ -334,7 +334,7 @@
                     </template>
                 </v-country>
             </template>
-        
+
             <!-- State select Vue component -->
             <template v-if="field.type == 'state' && field.is_visible">
                 <v-state>
@@ -353,11 +353,11 @@
                                         <option value="">
                                             @lang('admin::app.configuration.index.select-state')
                                         </option>
-                                        
+
                                         <option value="*">
                                             *
                                         </option>
-                                        
+
                                         <option
                                             v-for='(state, index) in countryStates[country]'
                                             :value="state.code"
@@ -367,7 +367,7 @@
                                     </x-admin::form.control-group.control>
                                 </x-admin::form.control-group>
                             </template>
-        
+
                             <template v-else>
                                 <x-admin::form.control-group class="flex">
                                     <x-admin::form.control-group.control
@@ -384,14 +384,14 @@
                     </template>
                 </v-state>
             </template>
-        
+
             <p
                 v-if="field.info && field.is_visible"
                 class="mt-1 block text-xs italic leading-5 text-gray-600 dark:text-gray-300"
                 v-text="info"
             >
             </p>
-     
+
             <!-- validation message -->
             <v-error-message
                 :name="name"
@@ -473,8 +473,8 @@
                 }
 
                 dependElement.addEventListener('change', (event) => {
-                    this.field['is_visible'] = 
-                        event.target.type === 'checkbox' 
+                    this.field['is_visible'] =
+                        event.target.type === 'checkbox'
                         ? event.target.checked
                         : this.validations.split(',').slice(1).includes(event.target.value);
                 });
