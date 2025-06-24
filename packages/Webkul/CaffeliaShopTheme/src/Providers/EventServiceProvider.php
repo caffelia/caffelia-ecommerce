@@ -3,17 +3,20 @@
 namespace Caffelia\ShopTheme\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Caffelia\ShopTheme\Listeners\Customer;
-use Caffelia\ShopTheme\Listeners\GDPR;
-use Caffelia\ShopTheme\Listeners\Invoice;
-use Caffelia\ShopTheme\Listeners\Order;
-use Caffelia\ShopTheme\Listeners\Refund;
-use Caffelia\ShopTheme\Listeners\Shipment;
+use Webkul\Shop\Listeners\Customer;
+use Webkul\Shop\Listeners\GDPR;
+use Webkul\Shop\Listeners\Invoice;
+use Webkul\Shop\Listeners\Order;
+use Webkul\Shop\Listeners\Refund;
+use Webkul\Shop\Listeners\Shipment;
 
 class EventServiceProvider extends ServiceProvider
 {
     /**
      * The event handler mappings for the application.
+     *
+     * For theme packages, we typically use the base Shop listeners
+     * unless we need custom behavior.
      *
      * @var array
      */
