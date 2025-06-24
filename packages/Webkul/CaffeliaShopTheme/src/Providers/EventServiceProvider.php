@@ -3,12 +3,12 @@
 namespace Caffelia\ShopTheme\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Webkul\Shop\Listeners\Customer;
-use Webkul\Shop\Listeners\GDPR;
-use Webkul\Shop\Listeners\Invoice;
-use Webkul\Shop\Listeners\Order;
-use Webkul\Shop\Listeners\Refund;
-use Webkul\Shop\Listeners\Shipment;
+use Caffelia\ShopTheme\Listeners\Customer;
+use Caffelia\ShopTheme\Listeners\GDPR;
+use Caffelia\ShopTheme\Listeners\Invoice;
+use Caffelia\ShopTheme\Listeners\Order;
+use Caffelia\ShopTheme\Listeners\Refund;
+use Caffelia\ShopTheme\Listeners\Shipment;
 
 class EventServiceProvider extends ServiceProvider
 {
