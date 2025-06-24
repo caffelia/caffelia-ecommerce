@@ -10,7 +10,7 @@ return [
     |
     */
 
-    'shop-default' => 'default',
+    'shop-default' => 'caffelia-shop',
 
     'shop' => [
         'default' => [
