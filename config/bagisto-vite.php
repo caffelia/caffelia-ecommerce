@@ -23,6 +23,12 @@ return [
             'package_assets_directory' => 'src/Resources/assets',
         ],
 
+        'caffelia-shop' => [
+            'hot_file'                 => 'caffelia-shop-theme-vite.hot',
+            'build_directory'          => 'themes/shop/caffelia-shop/build',
+            'package_assets_directory' => 'src/Resources/assets',
+        ],
+
         'installer' => [
             'hot_file'                 => 'installer-default-vite.hot',
             'build_directory'          => 'themes/installer/default/build',

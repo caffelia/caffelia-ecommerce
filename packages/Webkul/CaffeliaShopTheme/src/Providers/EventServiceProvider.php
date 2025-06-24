@@ -15,6 +15,9 @@ class EventServiceProvider extends ServiceProvider
     /**
      * The event handler mappings for the application.
      *
+     * For theme packages, we typically use the base Shop listeners
+     * unless we need custom behavior.
+     *
      * @var array
      */
     protected $listen = [
