@@ -5,30 +5,30 @@ use Illuminate\Support\Facades\Route;
 /**
  * Route to handle Bagisto's Image Cache requests.
  *
- * This is the primary fix. Bagisto creates URLs like `/cache/large/theme/1/image.webp`.
- * This route intercepts everything after `/cache/` into a single `$path` variable.
- * We then parse this path to extract the real file path for the cloud storage bucket.
+ * This is the primary fix. This route intercepts requests for cached images,
+ * finds the original image in your cloud bucket, and then streams the file
+ * directly to the browser. This avoids redirect errors.
  */
 Route::get('cache/{path}', function ($path) {
     // The incoming $path variable will look like "large/theme/1/image.webp".
-    // We need to find the first slash to separate the cache template ("large")
-    // from the actual file path ("theme/1/image.webp").
+    // We need to extract the actual file path ("theme/1/image.webp").
     $firstSlashPos = strpos($path, '/');
 
-    // If there's no slash, the path is malformed, so we can't find the file.
     if ($firstSlashPos === false) {
         abort(404);
     }
 
-    // The real path is the part of the string *after* the first slash.
     $realPath = substr($path, $firstSlashPos + 1);
 
-    // Use the Storage facade to get the URL. This is more reliable than using the
-    // env() helper directly in a route, as it uses the cached configuration.
-    $correctCloudUrl = Storage::disk('public')->url($realPath);
+    // Before serving, we must check if the file actually exists in the bucket.
+    if (!Storage::disk('public')->exists($realPath)) {
+        abort(404);
+    }
 
-    // Redirect the browser to the correct file in the cloud.
-    return redirect($correctCloudUrl);
+    // This is the key change: instead of redirecting, we find the file in the
+    // 'public' disk (your cloud bucket) and return it directly as a response.
+    // Laravel handles all the correct headers (like Content-Type).
+    return Storage::disk('public')->response($realPath);
 
 })->where('path', '.*');
 
@@ -40,10 +40,12 @@ Route::get('cache/{path}', function ($path) {
  * which Bagisto also generates in the `srcset` attribute.
  */
 Route::get('storage/{path}', function ($path) {
-    // Use the Storage facade here as well for consistency and reliability.
-    $correctCloudUrl = Storage::disk('public')->url($path);
+    // First, check if the file exists to avoid errors.
+    if (!Storage::disk('public')->exists($path)) {
+        abort(404);
+    }
 
-    // Redirect the browser to the correct file in the cloud.
-    return redirect($correctCloudUrl);
+    // Serve the file directly from the cloud bucket.
+    return Storage::disk('public')->response($path);
 
 })->where('path', '.*');
