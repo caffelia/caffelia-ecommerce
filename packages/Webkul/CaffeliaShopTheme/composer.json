@@ -1,0 +1,28 @@
+{
+    "name": "caffelia/shop-theme",
+    "license": "MIT",
+    "description": "Caffelia custom shop theme for Bagisto",
+    "authors": [
+        {
+            "name": "Caffelia Team",
+            "email": "info@caffelia.com"
+        }
+    ],
+    "require": {
+        "bagisto/laravel-shop": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Caffelia\\ShopTheme\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Caffelia\\ShopTheme\\Providers\\CaffeliaShopThemeServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "minimum-stability": "dev"
+}

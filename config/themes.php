@@ -24,6 +24,18 @@ return [
                 'package_assets_directory' => 'src/Resources/assets',
             ],
         ],
+
+        'caffelia-shop' => [
+            'name'        => 'Caffelia Shop Theme',
+            'assets_path' => 'public/themes/shop/caffelia-shop',
+            'views_path'  => 'packages/Webkul/CaffeliaShopTheme/src/Resources/views',
+
+            'vite'        => [
+                'hot_file'                 => 'caffelia-shop-theme-vite.hot',
+                'build_directory'          => 'themes/shop/caffelia-shop/build',
+                'package_assets_directory' => 'src/Resources/assets',
+            ],
+        ],
     ],
 
     /*

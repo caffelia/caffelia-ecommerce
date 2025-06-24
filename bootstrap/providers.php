@@ -37,6 +37,7 @@ return [
     Webkul\Sales\Providers\SalesServiceProvider::class,
     Webkul\Shipping\Providers\ShippingServiceProvider::class,
     Webkul\Shop\Providers\ShopServiceProvider::class,
+    Caffelia\ShopTheme\Providers\CaffeliaShopThemeServiceProvider::class,
     Webkul\Sitemap\Providers\SitemapServiceProvider::class,
     Webkul\SocialLogin\Providers\SocialLoginServiceProvider::class,
     Webkul\SocialShare\Providers\SocialShareServiceProvider::class,
