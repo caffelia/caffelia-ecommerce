@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use Caffelia\ShopTheme\Http\Controllers\BookingProductController;
 use Caffelia\ShopTheme\Http\Controllers\CompareController;
 use Caffelia\ShopTheme\Http\Controllers\HomeController;
@@ -10,41 +9,7 @@ use Caffelia\ShopTheme\Http\Controllers\ProductController;
 use Caffelia\ShopTheme\Http\Controllers\ProductsCategoriesProxyController;
 use Caffelia\ShopTheme\Http\Controllers\SearchController;
 use Caffelia\ShopTheme\Http\Controllers\SubscriptionController;
-Route::get('storage/{path}', function ($path) {
-    /**
-     * This route handles requests for files stored on the 'public' disk.
-     * In a Laravel Cloud environment with an attached S3-compatible bucket,
-     * the 'public' disk points to that bucket.
-     *
-     * The problem this solves:
-     * Bagisto (and other systems) may store relative paths in the database (e.g., 'theme/1/image.png').
-     * The frontend then requests `https://your-domain.com/storage/theme/1/image.png`.
-     * This route intercepts that request.
-     */
 
-    // First, check if the requested file actually exists in our cloud bucket.
-    // The `Storage::disk('public')` automatically points to your attached bucket.
-    if (!Storage::disk('public')->exists($path)) {
-        // If the file doesn't exist, return a standard 404 Not Found error.
-        abort(404);
-    }
-
-    /**
-     * If the file exists, we ask Laravel's Storage facade for the correct, full URL
-     * to that file in the cloud bucket. This works because the `url` key in your
-     * `config/filesystems.php` for the `public` disk is configured to use the `AWS_URL`
-     * environment variable provided by Laravel Cloud.
-     */
-    $correctCloudUrl = Storage::disk('public')->url($path);
-
-    /**
-     * Finally, we return an HTTP 302 redirect. This tells the user's browser:
-     * "The file you asked for isn't here. It's over at this other URL."
-     * The browser will then automatically make a new request to the correct cloud URL.
-     */
-    return redirect($correctCloudUrl);
-
-})->where('path', '.*');
 
 /**
  * CMS pages.
