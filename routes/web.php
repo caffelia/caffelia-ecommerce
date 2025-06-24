@@ -28,7 +28,10 @@ Route::get('cache/{path}', function ($path) {
     // This is the key change: instead of redirecting, we find the file in the
     // 'public' disk (your cloud bucket) and return it directly as a response.
     // Laravel handles all the correct headers (like Content-Type).
-    return Storage::disk('public')->response($realPath);
+    $file = Storage::disk('public')->get($realPath);
+    $type = Storage::mimeType($realPath);
+
+    return response($file, 200)->header('Content-Type', $type);
 
 })->where('path', '.*');
 
@@ -46,6 +49,9 @@ Route::get('storage/{path}', function ($path) {
     }
 
     // Serve the file directly from the cloud bucket.
-    return Storage::disk('public')->response($path);
+    $file = Storage::disk('public')->get($path);
+    $type = Storage::mimeType($path);
+
+    return response($file, 200)->header('Content-Type', $type);
 
 })->where('path', '.*');
