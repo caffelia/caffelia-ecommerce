@@ -24,8 +24,11 @@ Route::get('cache/{path}', function ($path) {
     // The real path is the part of the string *after* the first slash.
     $realPath = substr($path, $firstSlashPos + 1);
 
-    // Directly generate the public URL for the real file path on the 'public' disk (your cloud bucket).
-    $correctCloudUrl = Storage::disk('public')->url($realPath);
+    // Manually construct the full URL. This is a more direct approach to avoid
+    // potential issues with the Storage facade that might be causing a 500 error.
+    // It uses the AWS_URL environment variable provided by Laravel Cloud.
+    $baseUrl = rtrim(env('AWS_URL'), '/');
+    $correctCloudUrl = $baseUrl . '/' . $realPath;
 
     // Redirect the browser to the correct file in the cloud.
     return redirect($correctCloudUrl);
@@ -36,11 +39,13 @@ Route::get('cache/{path}', function ($path) {
 /**
  * Fallback Route for direct /storage/ links.
  *
- * This route handles any direct requests for files in the /storage/ directory.
+ * This route handles any direct requests for files in the /storage/ directory,
+ * which Bagisto also generates in the `srcset` attribute.
  */
 Route::get('storage/{path}', function ($path) {
-    // Directly generate the public URL for the file.
-    $correctCloudUrl = Storage::disk('public')->url($path);
+    // Manually construct the full URL, same as in the route above.
+    $baseUrl = rtrim(env('AWS_URL'), '/');
+    $correctCloudUrl = $baseUrl . '/' . $path;
 
     // Redirect the browser to the correct file in the cloud.
     return redirect($correctCloudUrl);
