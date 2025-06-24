@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Route;
  * This is the primary fix. Bagisto creates URLs like `/cache/large/theme/1/image.webp`.
  * This route intercepts everything after `/cache/` into a single `$path` variable.
  * We then parse this path to extract the real file path for the cloud storage bucket.
- * This is a more robust method than using multiple route parameters.
  */
 Route::get('cache/{path}', function ($path) {
     // The incoming $path variable will look like "large/theme/1/image.webp".
@@ -24,11 +23,9 @@ Route::get('cache/{path}', function ($path) {
     // The real path is the part of the string *after* the first slash.
     $realPath = substr($path, $firstSlashPos + 1);
 
-    // Manually construct the full URL. This is a more direct approach to avoid
-    // potential issues with the Storage facade that might be causing a 500 error.
-    // It uses the AWS_URL environment variable provided by Laravel Cloud.
-    $baseUrl = rtrim(env('AWS_URL'), '/');
-    $correctCloudUrl = $baseUrl . '/' . $realPath;
+    // Use the Storage facade to get the URL. This is more reliable than using the
+    // env() helper directly in a route, as it uses the cached configuration.
+    $correctCloudUrl = Storage::disk('public')->url($realPath);
 
     // Redirect the browser to the correct file in the cloud.
     return redirect($correctCloudUrl);
@@ -43,9 +40,8 @@ Route::get('cache/{path}', function ($path) {
  * which Bagisto also generates in the `srcset` attribute.
  */
 Route::get('storage/{path}', function ($path) {
-    // Manually construct the full URL, same as in the route above.
-    $baseUrl = rtrim(env('AWS_URL'), '/');
-    $correctCloudUrl = $baseUrl . '/' . $path;
+    // Use the Storage facade here as well for consistency and reliability.
+    $correctCloudUrl = Storage::disk('public')->url($path);
 
     // Redirect the browser to the correct file in the cloud.
     return redirect($correctCloudUrl);
