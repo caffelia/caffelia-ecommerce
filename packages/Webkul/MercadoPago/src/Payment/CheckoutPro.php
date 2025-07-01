@@ -114,14 +114,9 @@ class CheckoutPro extends MercadoPago
      */
     public function getAdditionalDetails()
     {
-        $details = parent::getAdditionalDetails();
-
-        // Add Checkout Pro frontend component
-        $details['mercadopago_checkout_pro_form'] = [
+        return [
             'title' => trans('mercadopago::app.checkout.checkout-pro.title'),
             'value' => view('mercadopago::checkout.onepage.mercadopago-checkout-pro')->render(),
         ];
-
-        return $details;
     }
 }

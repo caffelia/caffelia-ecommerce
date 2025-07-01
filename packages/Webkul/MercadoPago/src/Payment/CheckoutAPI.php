@@ -177,14 +177,9 @@ class CheckoutAPI extends MercadoPago
      */
     public function getAdditionalDetails()
     {
-        $details = parent::getAdditionalDetails();
-
-        // Add Checkout API frontend component
-        $details['mercadopago_checkout_api_form'] = [
+        return [
             'title' => trans('mercadopago::app.checkout.checkout-api.title'),
             'value' => view('mercadopago::checkout.onepage.mercadopago-checkout-api')->render(),
         ];
-
-        return $details;
     }
 }
