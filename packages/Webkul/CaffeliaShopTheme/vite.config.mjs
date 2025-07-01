@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
                     },
                     {
                         src: '../MercadoPago/src/Resources/assets/images/mercadopago.png',
-                        dest: '../../../public/themes/shop/caffelia-shop/assets'
+                        dest: '../../../public/themes/shop/caffelia-shop/assets/images'
                     }
                 ]
             }),
