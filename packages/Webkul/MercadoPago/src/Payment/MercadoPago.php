@@ -145,11 +145,11 @@ abstract class MercadoPago extends Payment
      *
      * @return string
      */
-    public function getImage()
+    public function getPaymentMethodImage()
     {
         $url = $this->getConfigData('image');
 
-        return $url ? Storage::url($url) : bagisto_asset('images/mercadopago.png', 'shop');
+        return $url ? Storage::url($url) : asset('themes/shop/caffelia-shop/assets/images/mercadopago.png');
     }
 
     /**
