@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('ip_address')->nullable()->index();
             $table->text('user_agent')->nullable();
             $table->enum('status', ['received', 'processed', 'failed', 'error'])->default('received')->index();
-            $table->unsignedBigInteger('order_id')->nullable()->index();
+            $table->unsignedInteger('order_id')->nullable()->index();
             $table->string('payment_id')->nullable()->index();
             $table->timestamp('received_at')->index();
             $table->timestamp('processed_at')->nullable()->index();
