@@ -1,0 +1,25 @@
+{
+    "name": "bagisto/laravel-mercadopago",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joan Serna",
+            "email": "joan@caffelia.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Webkul\\MercadoPago\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\MercadoPago\\Providers\\MercadoPagoServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "minimum-stability": "dev"
+}

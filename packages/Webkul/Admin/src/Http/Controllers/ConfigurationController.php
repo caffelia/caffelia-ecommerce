@@ -74,7 +74,7 @@ class ConfigurationController extends Controller
             $atLeastOnePaymentMethodEnabled = false;
 
             foreach ($data['sales']['payment_methods'] as $paymentMethod) {
-                if ($paymentMethod['active']) {
+                if (isset($paymentMethod['active']) && $paymentMethod['active']) {
                     $atLeastOnePaymentMethodEnabled = true;
 
                     break;

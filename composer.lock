@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be5083a090c8a03579591ecf34f7e282",
+    "content-hash": "9a04342335896d71849109452e92d06b",
     "packages": [
         {
             "name": "astrotomic/laravel-translatable",
@@ -306,6 +306,41 @@
                 "source": "https://github.com/bagisto/image-cache/tree/master"
             },
             "time": "2024-10-03T06:31:17+00:00"
+        },
+        {
+            "name": "bagisto/laravel-mercadopago",
+            "version": "dev-develop",
+            "dist": {
+                "type": "path",
+                "url": "packages/Webkul/MercadoPago",
+                "reference": "a2f96532a431d90cc8da8ec3766f5dbd20922a1d"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Webkul\\MercadoPago\\Providers\\MercadoPagoServiceProvider"
+                    ],
+                    "aliases": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webkul\\MercadoPago\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joan Serna",
+                    "email": "joan@caffelia.com"
+                }
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "barryvdh/laravel-dompdf",
@@ -14153,7 +14188,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "bagisto/image-cache": 20
+        "bagisto/image-cache": 20,
+        "bagisto/laravel-mercadopago": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

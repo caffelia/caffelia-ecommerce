@@ -19,6 +19,7 @@
         "ext-tokenizer": "*",
         "astrotomic/laravel-translatable": "^11.0.0",
         "bagisto/image-cache": "dev-master",
+        "bagisto/laravel-mercadopago": "@dev",
         "barryvdh/laravel-dompdf": "^2.0.0",
         "diglactic/laravel-breadcrumbs": "^9.0",
         "elasticsearch/elasticsearch": "^8.10",
@@ -100,6 +101,7 @@
             "Webkul\\Tax\\": "packages/Webkul/Tax/src",
             "Webkul\\Theme\\": "packages/Webkul/Theme/src",
             "Webkul\\User\\": "packages/Webkul/User/src",
+            "Webkul\\MercadoPago\\": "packages/Webkul/MercadoPago/src",
             "Caffelia\\ShopTheme\\": "packages/Webkul/CaffeliaShopTheme/src"
         }
     },
@@ -131,13 +133,19 @@
             ]
         }
     },
-    "repositories": [{
-        "type": "path",
-        "url": "packages/*/*",
-        "options": {
-            "symlink": true
+    "repositories": {
+        "mercadopago": {
+            "type": "path",
+            "url": "packages/Webkul/MercadoPago"
+        },
+        "0": {
+            "type": "path",
+            "url": "packages/*/*",
+            "options": {
+                "symlink": true
+            }
         }
-    }],
+    },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
