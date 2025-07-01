@@ -3,7 +3,8 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "build:caffelia": "vite build --config packages/Webkul/CaffeliaShopTheme/vite.config.mjs"
     },
     "devDependencies": {
         "@playwright/test": "^1.48.1",

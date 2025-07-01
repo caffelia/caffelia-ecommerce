@@ -2,7 +2,7 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "for dir in packages/Webkul/Admin packages/Webkul/Shop packages/Webkul/CaffeliaShopTheme; do (cd $dir && npm install && npm run build); done"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^5.0.0",

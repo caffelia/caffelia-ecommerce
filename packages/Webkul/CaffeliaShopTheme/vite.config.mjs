@@ -22,12 +22,12 @@ export default defineConfig(({ mode }) => {
             vue(),
 
             laravel({
-                hotFile: 'public/caffelia-shop-theme-vite.hot',
-                publicDirectory: 'public',
+                hotFile: '../../../public/caffelia-shop-theme-vite.hot',
+                publicDirectory: '../../../public',
                 buildDirectory: 'themes/shop/caffelia-shop/build',
                 input: [
-                    'packages/Webkul/CaffeliaShopTheme/src/Resources/assets/css/app.css',
-                    'packages/Webkul/CaffeliaShopTheme/src/Resources/assets/js/app.js',
+                    'src/Resources/assets/css/app.css',
+                    'src/Resources/assets/js/app.js',
                 ],
                 refresh: true,
             }),
@@ -35,12 +35,12 @@ export default defineConfig(({ mode }) => {
             viteStaticCopy({
                 targets: [
                     {
-                        src: 'packages/Webkul/CaffeliaShopTheme/src/Resources/assets/images',
-                        dest: 'public/themes/shop/caffelia-shop/build/assets'
+                        src: 'src/Resources/assets/images',
+                        dest: '../../../public/themes/shop/caffelia-shop/assets'
                     },
                     {
-                        src: 'packages/Webkul/MercadoPago/src/Resources/assets/images/mercadopago.png',
-                        dest: 'public/themes/shop/caffelia-shop/build/assets'
+                        src: '../MercadoPago/src/Resources/assets/images/mercadopago.png',
+                        dest: '../../../public/themes/shop/caffelia-shop/assets'
                     }
                 ]
             }),
