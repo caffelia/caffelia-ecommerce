@@ -44,6 +44,10 @@
     "file": "assets/medium-product-placeholder-INODB-G2.webp",
     "src": "src/Resources/assets/images/medium-product-placeholder.webp"
   },
+  "src/Resources/assets/images/mercadopago-logo.png": {
+    "file": "assets/mercadopago-C_nUP1gf.png",
+    "src": "src/Resources/assets/images/mercadopago.png"
+  },
   "src/Resources/assets/images/mercadopago.png": {
     "file": "assets/mercadopago-C_nUP1gf.png",
     "src": "src/Resources/assets/images/mercadopago.png"

@@ -4,7 +4,7 @@
         <div class="flex items-center gap-3">
             <div class="flex-shrink-0">
                 <img
-                    src="{{ bagisto_asset('images/mercadopago-logo.png', 'shop') }}"
+                    src="{{ asset('themes/shop/caffelia-shop/assets/images/mercadopago.png') }}"
                     alt="MercadoPago"
                     class="w-12 h-8 object-contain"
                     onerror="this.style.display='none'"
