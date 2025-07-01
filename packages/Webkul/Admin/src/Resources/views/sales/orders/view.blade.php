@@ -712,7 +712,7 @@
                             <!-- Additional details -->
                             @if (! empty($additionalDetails))
                                 <p class="pt-4 font-semibold text-gray-800 dark:text-white">
-                                    {{ $additionalDetails['title'] }}
+                                    {{ $additionalDetails['title'] ?? '' }}
                                 </p>
 
                                 <p class="text-gray-600 dark:text-gray-300">
