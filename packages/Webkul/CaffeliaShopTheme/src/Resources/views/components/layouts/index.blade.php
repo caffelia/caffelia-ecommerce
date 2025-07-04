@@ -119,7 +119,7 @@
 
             <!-- Page Content Blade Component -->
             <main id="main" class="bg-white">
-                {{ $slot }}
+                {{ $slot ?? '' }}
             </main>
 
             {!! view_render_event('bagisto.shop.layout.content.after') !!}
