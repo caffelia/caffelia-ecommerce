@@ -74,27 +74,6 @@
 
             {!! view_render_event('bagisto.shop.checkout.onepage.address.form.email.after') !!}
 
-            <!-- Vat ID -->
-            <template v-if="controlName=='billing'">
-                <x-caffelia-shop::form.control-group>
-                    <x-caffelia-shop::form.control-group.label>
-                        @lang('caffelia-shop::app.checkout.onepage.address.vat-id')
-                    </x-caffelia-shop::form.control-group.label>
-
-                    <x-caffelia-shop::form.control-group.control
-                        type="text"
-                        ::name="controlName + '.vat_id'"
-                        ::value="address.vat_id"
-                        :label="trans('caffelia-shop::app.checkout.onepage.address.vat-id')"
-                        :placeholder="trans('caffelia-shop::app.checkout.onepage.address.vat-id')"
-                    />
-
-                    <x-caffelia-shop::form.control-group.error ::name="controlName + '.vat_id'" />
-                </x-caffelia-shop::form.control-group>
-
-                {!! view_render_event('bagisto.shop.checkout.onepage.address.form.vat_id.after') !!}
-            </template>
-
             <!-- Street Address -->
             <x-caffelia-shop::form.control-group>
                 <x-caffelia-shop::form.control-group.label class="required !mt-0">
@@ -150,6 +129,7 @@
                         rules="{{ core()->isCountryRequired() ? 'required' : '' }}"
                         :label="trans('caffelia-shop::app.checkout.onepage.address.country')"
                         :placeholder="trans('caffelia-shop::app.checkout.onepage.address.country')"
+                        :disabled="true"
                     >
                         <option value="">
                             @lang('caffelia-shop::app.checkout.onepage.address.select-country')
@@ -158,7 +138,6 @@
                         <option
                             v-for="country in countries"
                             :value="country.code"
-                            v-if="country.code === 'CO'"
                         >
                             @{{ country.name }}
                         </option>
@@ -328,6 +307,10 @@
                 this.getCountries();
 
                 this.getStates();
+
+                this.address.country = 'CO';
+
+                this.selectedCountry = 'CO';
             },
 
             methods: {
