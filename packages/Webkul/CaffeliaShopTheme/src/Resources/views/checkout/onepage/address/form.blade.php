@@ -12,22 +12,6 @@
                 />
             </x-caffelia-shop::form.control-group>
 
-            <!-- Company Name -->
-            <x-caffelia-shop::form.control-group>
-                <x-caffelia-shop::form.control-group.label>
-                    @lang('caffelia-shop::app.checkout.onepage.address.company-name')
-                </x-caffelia-shop::form.control-group.label>
-
-                <x-caffelia-shop::form.control-group.control
-                    type="text"
-                    ::name="controlName + '.company_name'"
-                    ::value="address.company_name"
-                    :placeholder="trans('caffelia-shop::app.checkout.onepage.address.company-name')"
-                />
-            </x-caffelia-shop::form.control-group>
-
-            {!! view_render_event('bagisto.shop.checkout.onepage.address.form.company_name.after') !!}
-
             <!-- First Name -->
             <div class="grid grid-cols-2 gap-x-5 max-md:grid-cols-1">
                 <x-caffelia-shop::form.control-group>
@@ -174,6 +158,7 @@
                         <option
                             v-for="country in countries"
                             :value="country.code"
+                            v-if="country.code === 'CO'"
                         >
                             @{{ country.name }}
                         </option>
@@ -310,12 +295,11 @@
 
                     default: () => ({
                         id: 0,
-                        company_name: '',
                         first_name: '',
                         last_name: '',
                         email: '',
                         address: [],
-                        country: '',
+                        country: 'CO',
                         state: '',
                         city: '',
                         postcode: '',
