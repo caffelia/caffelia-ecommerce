@@ -16,6 +16,10 @@ class ThemeServiceProvider extends ServiceProvider
     {
         include __DIR__.'/../Http/helpers.php';
 
+        $this->app->singleton(\Webkul\Theme\Themes::class, function () {
+            return new \Webkul\Theme\Themes();
+        });
+
         $this->app->singleton('view.finder', function ($app) {
             return new \Webkul\Theme\ThemeViewFinder(
                 $app['files'],
