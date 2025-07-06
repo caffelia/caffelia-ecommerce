@@ -84,7 +84,7 @@
                     type="text"
                     ::name="controlName + '.address.[0]'"
                     ::value="address.address[0]"
-                    rules="required|address"
+                    rules="required"
                     :label="trans('caffelia-shop::app.checkout.onepage.address.street-address')"
                     :placeholder="trans('caffelia-shop::app.checkout.onepage.address.street-address')"
                 />
@@ -99,7 +99,6 @@
                         <x-caffelia-shop::form.control-group.control
                             type="text"
                             ::name="controlName + '.address.[{{ $i }}]'"
-                            rules="address"
                             :label="trans('caffelia-shop::app.checkout.onepage.address.street-address')"
                             :placeholder="trans('caffelia-shop::app.checkout.onepage.address.street-address')"
                         />
