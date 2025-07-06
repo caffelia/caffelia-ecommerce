@@ -246,8 +246,14 @@
                                 v-model="selectedItems"
                                 ::rules="{'required': Boolean(option.is_required)}"
                                 ::label="option.label"
-                                :options="formattedOptions"
                             >
+                            <option
+                                    v-for="item in optionItems"
+                                    :value="item.id"
+                                    :selected="value && value.includes(item.id)"
+                                >
+                                    @{{ item.label + (parseFloat(item.price) ? ' + ' + $shop.formatPrice(item.price) : '') }}
+                                </option>
                             </x-caffelia-shop::form.control-group.control>
                         </template>
 
