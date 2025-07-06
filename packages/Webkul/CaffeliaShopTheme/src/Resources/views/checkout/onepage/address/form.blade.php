@@ -169,7 +169,7 @@
                                 </option>
 
                                 <option
-                                    v-for='(state, index) in states[selectedCountry]'
+                                    v-for='(state, index) in sortedStates'
                                     :value="state.code"
                                 >
                                     @{{ state.default_name }}
@@ -300,6 +300,14 @@
             computed: {
                 haveStates() {
                     return !! this.states[this.selectedCountry]?.length;
+                },
+
+                sortedStates() {
+                    if (! this.states?.[this.selectedCountry]) {
+                        return [];
+                    }
+
+                    return this.states[this.selectedCountry].slice().sort((a, b) => a.default_name.localeCompare(b.default_name));
                 },
             },
 
