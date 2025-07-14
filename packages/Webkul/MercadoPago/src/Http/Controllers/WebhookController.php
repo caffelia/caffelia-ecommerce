@@ -144,7 +144,18 @@ class WebhookController extends Controller
             return [trim($key) => trim($value)];
         });
 
-        if (! $parts->has('ts') || ! $parts->has('v1') || ! $request->has('data.id')) {
+        if (! $parts->has('ts') || ! $parts->has('v1')) {
+            return false;
+        }
+
+        // Dynamically get the event ID from the payload
+        $eventId = $request->input('data.id') ?? $request->input('id');
+
+        if (! $eventId) {
+            logger()->warning('MercadoPago Webhook - Event ID (data.id or id) not found in payload.', [
+                'payload' => $request->all(),
+            ]);
+
             return false;
         }
 
@@ -152,7 +163,7 @@ class WebhookController extends Controller
 
         $signedPayload = sprintf(
             'id:%s;request-id:%s;ts:%s;',
-            $request->input('data.id'),
+            $eventId,
             $request->header('x-request-id'),
             $timestamp
         );
