@@ -144,13 +144,18 @@ class WebhookController extends Controller
             return [trim($key) => trim($value)];
         });
 
-        if (! $parts->has('ts') || ! $parts->has('v1')) {
+        if (! $parts->has('ts') || ! $parts->has('v1') || ! $request->has('data.id')) {
             return false;
         }
 
         $timestamp = $parts->get('ts');
 
-        $signedPayload = 'id:' . $request->input('data.id') . ';request-id:' . $request->header('x-request-id') . ';ts:' . $timestamp . ';';
+        $signedPayload = sprintf(
+            'id:%s;request-id:%s;ts:%s;',
+            $request->input('data.id'),
+            $request->header('x-request-id'),
+            $timestamp
+        );
 
         $expectedSignature = hash_hmac('sha256', $signedPayload, $secret);
 
