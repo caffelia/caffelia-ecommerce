@@ -37,7 +37,7 @@ class ConfigurationController extends Controller
                 'Authorization' => 'Bearer ' . $accessToken,
                 'Content-Type' => 'application/json',
                 'User-Agent' => 'Bagisto MercadoPago Plugin',
-                'X-Integrator-Id' => 'dev_24c65fb163bf11ea96500242ac130004',
+                'X-Integrator-Id' => config('services.mercadopago.integrator_id'),
                 'X-Platform-Id' => 'bagisto',
             ])->timeout(10)->get($baseUrl . '/v1/payment_methods');
 
