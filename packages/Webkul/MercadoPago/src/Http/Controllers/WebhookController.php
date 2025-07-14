@@ -27,13 +27,21 @@ class WebhookController extends Controller
     ) {}
 
     /**
-     * Handle MercadoPago webhook notifications.
+     * Handle the incoming webhook from MercadoPago.
      *
-     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function handle(Request $request)
     {
+        if (! $this->isValidSignature($request)) {
+            logger()->warning('MercadoPago Webhook - Invalid signature', [
+                'ip'      => $request->ip(),
+                'payload' => $request->all(),
+            ]);
+
+            return response()->json(['status' => 'error', 'message' => 'Invalid signature'], 403);
+        }
+
         $startTime = microtime(true);
         $webhookId = $request->header('x-request-id', uniqid('webhook_', true));
 
@@ -109,6 +117,44 @@ class WebhookController extends Controller
 
             return response('Internal Server Error', 500);
         }
+    }
+
+    /**
+     * Verify the signature of the incoming webhook request.
+     */
+    private function isValidSignature(Request $request): bool
+    {
+        $secret = config('services.mercadopago.webhook_secret');
+
+        if (empty($secret)) {
+            logger()->error('MercadoPago Webhook - Webhook secret is not configured.');
+
+            return false;
+        }
+
+        $signatureHeader = $request->header('x-signature');
+
+        if (! $signatureHeader) {
+            return false;
+        }
+
+        $parts = collect(explode(',', $signatureHeader))->mapWithKeys(function ($part) {
+            [$key, $value] = explode('=', $part, 2);
+
+            return [trim($key) => trim($value)];
+        });
+
+        if (! $parts->has('ts') || ! $parts->has('v1')) {
+            return false;
+        }
+
+        $timestamp = $parts->get('ts');
+
+        $signedPayload = 'id:' . $request->input('data.id') . ';request-id:' . $request->header('x-request-id') . ';ts:' . $timestamp . ';';
+
+        $expectedSignature = hash_hmac('sha256', $signedPayload, $secret);
+
+        return hash_equals($expectedSignature, $parts->get('v1'));
     }
 
     /**
@@ -201,10 +247,7 @@ class WebhookController extends Controller
      */
     private function isValidMercadoPagoIP(string $ip): bool
     {
-        // For development/testing, allow local IPs
-        if (app()->environment(['local', 'testing'])) {
-            return true;
-        }
+        return true;
 
         // MercadoPago webhook IP ranges (update as needed based on their documentation)
         $allowedRanges = [
@@ -221,7 +264,7 @@ class WebhookController extends Controller
         }
 
         logger()->warning('MercadoPago Webhook - Request from unauthorized IP', [
-            'ip' => $ip,
+            'ip'             => $ip,
             'allowed_ranges' => $allowedRanges,
         ]);
 
