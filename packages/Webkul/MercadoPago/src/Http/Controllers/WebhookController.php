@@ -193,11 +193,11 @@ class WebhookController extends Controller
             return false;
         }
 
-        // Dynamically get the event ID from the payload
-        $eventId = $request->input('data.id') ?? $request->input('id');
+        // The signature is always built using the top-level Notification ID.
+        $eventId = $request->input('id');
 
         if (! $eventId) {
-            logger()->warning('MercadoPago Webhook - Event ID (data.id or id) not found in payload.', [
+            logger()->warning('MercadoPago Webhook - Notification ID (id) not found in payload.', [
                 'payload' => $request->all(),
             ]);
 
@@ -514,7 +514,7 @@ class WebhookController extends Controller
 
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
-                $paymentDetails = $apiHelper->get("/v1/payments/{$paymentId}");
+                $paymentDetails = $apiHelper->getPayment($paymentId);
 
                 if ($paymentDetails) {
                     return $paymentDetails;
