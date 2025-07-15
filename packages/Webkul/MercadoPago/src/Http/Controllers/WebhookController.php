@@ -123,7 +123,9 @@ class WebhookController extends Controller
                     'response_data'   => $result,
                 ]);
 
-                return response($result['message'], $result['success'] ? 200 : 400);
+                $statusCode = $result['status_code'] ?? ($result['success'] ? 200 : 400);
+
+                return response($result['message'], $statusCode);
             }
 
             // For unhandled events, acknowledge receipt
@@ -301,13 +303,14 @@ class WebhookController extends Controller
         $order = $this->findOrderByReference($externalReference);
 
         if (!$order) {
-            logger()->warning("MercadoPago Webhook - Order not found for reference: {$externalReference}", [
+            logger()->warning("MercadoPago Webhook - Order not found for reference: {$externalReference}. Retrying.", [
                 'webhook_id' => $webhookEvent->webhook_id,
                 'payment_id' => $paymentId,
             ]);
             return [
-                'success' => false,
-                'message' => "Order not found for reference: {$externalReference}",
+                'success'     => false,
+                'message'     => "Order not found for reference: {$externalReference}. Waiting for order creation.",
+                'status_code' => 404, // Not Found - This will cause MercadoPago to retry.
             ];
         }
 
