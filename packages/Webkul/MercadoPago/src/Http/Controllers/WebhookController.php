@@ -406,7 +406,6 @@ class WebhookController extends Controller
                         'payment_id' => $paymentId,
                         'attempt' => $attempt,
                     ]);
-                    sleep($delay);
                 }
             } catch (\Exception $e) {
                 logger()->error("MercadoPago Webhook - Error fetching payment (attempt {$attempt}): " . $e->getMessage(), [
