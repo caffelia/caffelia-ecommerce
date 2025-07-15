@@ -69,7 +69,7 @@ class MercadoPagoAPI
             $url = $this->baseUrl . $endpoint;
 
             $response = Http::withHeaders($this->getHeaders())
-                ->timeout(30)
+                ->timeout(10)
                 ->{strtolower($method)}($url, $data);
 
             if ($response->successful()) {

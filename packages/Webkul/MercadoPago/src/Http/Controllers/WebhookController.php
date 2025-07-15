@@ -33,6 +33,22 @@ class WebhookController extends Controller
      */
     public function handle(Request $request)
     {
+        // Define a unique ID for this webhook request early for logging.
+        $webhookId = $request->header('x-request-id', uniqid('webhook_', true));
+
+        // Register a shutdown function to capture fatal errors.
+        register_shutdown_function(function () use ($webhookId) {
+            $error = error_get_last();
+
+            // Log critical error if the script was terminated unexpectedly.
+            if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR])) {
+                logger()->critical('MercadoPago Webhook - SHUTDOWN: Process terminated unexpectedly.', [
+                    'webhook_id' => $webhookId,
+                    'error'      => $error,
+                ]);
+            }
+        });
+
         if (! $this->isValidSignature($request)) {
             logger()->warning('MercadoPago Webhook - Invalid signature', [
                 'ip'      => $request->ip(),
@@ -43,7 +59,6 @@ class WebhookController extends Controller
         }
 
         $startTime = microtime(true);
-        $webhookId = $request->header('x-request-id', uniqid('webhook_', true));
 
         try {
             logger()->info('MercadoPago Webhook received', [
@@ -125,10 +140,19 @@ class WebhookController extends Controller
 
                 $statusCode = $result['status_code'] ?? ($result['success'] ? 200 : 400);
 
+                logger()->info('MercadoPago Webhook - Request finished.', [
+                    'webhook_id'  => $webhookId,
+                    'status_code' => $statusCode,
+                ]);
+
                 return response($result['message'], $statusCode);
             }
 
             // For unhandled events, acknowledge receipt
+            logger()->info('MercadoPago Webhook - Request finished (unhandled event).', [
+                'webhook_id'  => $webhookId,
+                'status_code' => 200,
+            ]);
             return response('Webhook acknowledged', 200);
 
         } catch (\Exception $e) {
