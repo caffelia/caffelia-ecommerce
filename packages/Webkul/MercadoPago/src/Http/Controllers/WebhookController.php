@@ -66,9 +66,9 @@ class WebhookController extends Controller
             }
 
             $data = $request->all();
-            $eventType = $data['type'] ?? '';
+            $eventType = $data['type'] ?? $data['topic'] ?? '';
             $action = $data['action'] ?? '';
-            $eventId = $data['id'] ?? '';
+            $eventId = $request->input('data.id') ?? $request->input('id');
 
             // Check for idempotency - prevent duplicate processing
             if ($this->isDuplicateEvent($eventId, $webhookId)) {
@@ -82,18 +82,63 @@ class WebhookController extends Controller
             // Store webhook event for tracking and debugging
             $webhookEvent = $this->storeWebhookEvent($request, $webhookId, $eventType, $action);
 
+            $result = null;
+
             // Handle different webhook types
-            $result = $this->processWebhookEvent($eventType, $action, $data, $webhookEvent);
+            switch ($eventType) {
+                case 'payment':
+                    $result = $this->handlePaymentWebhook($data, $webhookEvent);
+                    break;
 
-            // Update webhook event with processing result
-            $webhookEvent->update([
-                'processed_at' => now(),
-                'processing_time' => round((microtime(true) - $startTime) * 1000, 2), // milliseconds
-                'status' => $result['success'] ? 'processed' : 'failed',
-                'response_data' => $result,
-            ]);
+                case 'merchant_order':
+                    $result = $this->handleMerchantOrderWebhook($data, $webhookEvent);
+                    break;
 
-            return response($result['message'], $result['success'] ? 200 : 400);
+                case 'subscription_preapproval':
+                case 'subscription_preapproval_plan':
+                case 'subscription_authorized_payment':
+                    logger()->info("MercadoPago Webhook - Subscription related event '{$eventType}' received but not handled.", [
+                        'webhook_id' => $webhookEvent->webhook_id,
+                        'data'       => $data,
+                    ]);
+                    break;
+
+                case 'chargebacks':
+                    logger()->info("MercadoPago Webhook - Chargeback event received but not handled.", [
+                        'webhook_id' => $webhookEvent->webhook_id,
+                        'data'       => $data,
+                    ]);
+                    break;
+
+                case 'claim':
+                    logger()->info("MercadoPago Webhook - Claim event received but not handled.", [
+                        'webhook_id' => $webhookEvent->webhook_id,
+                        'data'       => $data,
+                    ]);
+                    break;
+
+                default:
+                    logger()->info("MercadoPago Webhook - Unknown event type '{$eventType}' received.", [
+                        'webhook_id' => $webhookEvent->webhook_id,
+                        'data'       => $data,
+                    ]);
+                    break;
+            }
+
+            // If a handler returned a result, update the event record
+            if ($result) {
+                $webhookEvent->update([
+                    'processed_at'    => now(),
+                    'processing_time' => round((microtime(true) - $startTime) * 1000, 2), // milliseconds
+                    'status'          => $result['success'] ? 'processed' : 'failed',
+                    'response_data'   => $result,
+                ]);
+
+                return response($result['message'], $result['success'] ? 200 : 400);
+            }
+
+            // For unhandled events, acknowledge receipt
+            return response('Webhook acknowledged', 200);
 
         } catch (\Exception $e) {
             $processingTime = round((microtime(true) - $startTime) * 1000, 2);
@@ -220,57 +265,29 @@ class WebhookController extends Controller
             }
         }
 
-        return ['valid' => true];
+        return [
+            'valid' => true,
+            'reason' => '',
+        ];
     }
 
     /**
-     * Validate webhook signature using MercadoPago's algorithm.
-     *
-     * @param string $payload
-     * @param string $signature
-     * @param string $secret
-     * @param string $timestamp
-     * @return bool
-     */
-    private function validateSignature(string $payload, string $signature, string $secret, string $timestamp): bool
-    {
-        try {
-            // MercadoPago uses HMAC-SHA256 for webhook signature validation
-            $expectedSignature = hash_hmac('sha256', $timestamp . $payload, $secret);
-
-            // Parse signature header (format: "ts=timestamp,v1=signature")
-            $signatureParts = [];
-            foreach (explode(',', $signature) as $part) {
-                [$key, $value] = explode('=', $part, 2);
-                $signatureParts[$key] = $value;
-            }
-
-            $providedSignature = $signatureParts['v1'] ?? '';
-
-            return hash_equals($expectedSignature, $providedSignature);
-
-        } catch (\Exception $e) {
-            logger()->error('MercadoPago Webhook - Signature validation error: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Check if IP is from MercadoPago's webhook servers.
+     * Check if an IP address is within a given CIDR range.
      *
      * @param string $ip
+     * @param string $range
      * @return bool
      */
     private function isValidMercadoPagoIP(string $ip): bool
     {
-        return true;
-
-        // MercadoPago webhook IP ranges (update as needed based on their documentation)
+        // Add known MercadoPago IP ranges for validation
+        // Note: These ranges may change. It's best to keep them updated from official documentation.
         $allowedRanges = [
-            '209.225.49.0/24',
-            '216.33.197.0/24',
-            '216.33.196.0/24',
-            '209.225.48.0/24',
+            '18.228.0.0/16',
+            '18.232.0.0/16',
+            '34.192.0.0/12',
+            '52.0.0.0/11',
+            // Add more ranges as needed
         ];
 
         foreach ($allowedRanges as $range) {
@@ -279,16 +296,15 @@ class WebhookController extends Controller
             }
         }
 
-        logger()->warning('MercadoPago Webhook - Request from unauthorized IP', [
-            'ip'             => $ip,
-            'allowed_ranges' => $allowedRanges,
+        logger()->warning('MercadoPago Webhook - Request from non-whitelisted IP', [
+            'ip' => $ip,
         ]);
 
         return false;
     }
 
     /**
-     * Check if an IP is within a CIDR range.
+     * Check if an IP address is within a given CIDR range.
      *
      * @param string $ip
      * @param string $range
@@ -296,12 +312,17 @@ class WebhookController extends Controller
      */
     private function ipInRange(string $ip, string $range): bool
     {
-        [$subnet, $mask] = explode('/', $range);
-        return (ip2long($ip) & ~((1 << (32 - $mask)) - 1)) === ip2long($subnet);
+        [$subnet, $bits] = explode('/', $range);
+        $ip = ip2long($ip);
+        $subnet = ip2long($subnet);
+        $mask = -1 << (32 - $bits);
+        $subnet &= $mask; // Discard host bits
+
+        return ($ip & $mask) == $subnet;
     }
 
     /**
-     * Check if this is a duplicate event to prevent double processing.
+     * Prevent duplicate processing of the same event.
      *
      * @param string $eventId
      * @param string $webhookId
@@ -309,24 +330,39 @@ class WebhookController extends Controller
      */
     private function isDuplicateEvent(string $eventId, string $webhookId): bool
     {
-        if (!$eventId) {
+        if (empty($eventId)) {
             return false;
         }
 
-        $cacheKey = "mercadopago_webhook_processed_{$eventId}";
+        // Use a cache lock to handle race conditions
+        $lockKey = 'webhook_event_lock_' . $eventId;
+        $lock = Cache::lock($lockKey, 10); // Lock for 10 seconds
 
-        if (Cache::has($cacheKey)) {
-            return true;
+        if ($lock->get()) {
+            $isProcessed = WebhookEvent::where('event_id', $eventId)
+                ->where('status', '!=', 'pending') // Consider 'error' as processed to avoid retries
+                ->exists();
+
+            if ($isProcessed) {
+                $lock->release();
+                return true; // Is a duplicate
+            }
+
+            // Not processed yet, so we will process it
+            $lock->release();
+            return false;
         }
 
-        // Set cache for 24 hours to prevent reprocessing
-        Cache::put($cacheKey, $webhookId, now()->addDay());
+        // Could not acquire lock, assume it's being processed by another request
+        logger()->warning('MercadoPago Webhook - Could not acquire lock for event', [
+            'event_id' => $eventId,
+        ]);
 
-        return false;
+        return true; // Treat as duplicate to be safe
     }
 
     /**
-     * Store webhook event for tracking and debugging.
+     * Store the incoming webhook event in the database.
      *
      * @param Request $request
      * @param string $webhookId
@@ -336,74 +372,18 @@ class WebhookController extends Controller
      */
     private function storeWebhookEvent(Request $request, string $webhookId, string $eventType, string $action): WebhookEvent
     {
-        return WebhookEvent::create([
-            'webhook_id' => $webhookId,
-            'event_type' => $eventType,
-            'action' => $action,
-            'payload' => $request->all(),
-            'headers' => $request->headers->all(),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'status' => 'received',
-            'received_at' => now(),
-        ]);
-    }
-
-    /**
-     * Process webhook event based on type.
-     *
-     * @param string $eventType
-     * @param string $action
-     * @param array $data
-     * @param WebhookEvent $webhookEvent
-     * @return array
-     */
-    private function processWebhookEvent(string $eventType, string $action, array $data, WebhookEvent $webhookEvent): array
-    {
-        try {
-            switch ($eventType) {
-                case 'payment':
-                    return $this->handlePaymentWebhook($data, $webhookEvent);
-
-                case 'plan':
-                case 'subscription':
-                case 'invoice':
-                    // Handle subscription-related webhooks if needed in the future
-                    logger()->info("MercadoPago Webhook - {$eventType} webhook received but not handled", [
-                        'webhook_id' => $webhookEvent->webhook_id,
-                        'data' => $data,
-                    ]);
-                    return [
-                        'success' => true,
-                        'message' => "Webhook type '{$eventType}' acknowledged but not processed",
-                    ];
-
-                case 'merchant_order':
-                    return $this->handleMerchantOrderWebhook($data, $webhookEvent);
-
-                default:
-                    logger()->info("MercadoPago Webhook - Unknown type: {$eventType}", [
-                        'webhook_id' => $webhookEvent->webhook_id,
-                        'data' => $data,
-                    ]);
-                    return [
-                        'success' => true,
-                        'message' => "Unknown webhook type: {$eventType}",
-                    ];
-            }
-        } catch (\Exception $e) {
-            logger()->error('MercadoPago Webhook - Error processing event', [
-                'webhook_id' => $webhookEvent->webhook_id,
-                'event_type' => $eventType,
-                'error' => $e->getMessage(),
+        return DB::transaction(function () use ($request, $webhookId, $eventType, $action) {
+            return WebhookEvent::create([
+                'webhook_id'      => $webhookId,
+                'event_id'        => $request->input('data.id') ?? $request->input('id'),
+                'event_type'      => $eventType,
+                'event_action'    => $action,
+                'payload'         => $request->all(),
+                'headers'         => $request->headers->all(),
+                'ip_address'      => $request->ip(),
+                'status'          => 'pending',
             ]);
-
-            return [
-                'success' => false,
-                'message' => 'Error processing webhook event',
-                'error' => $e->getMessage(),
-            ];
-        }
+        });
     }
 
     /**
@@ -522,7 +502,7 @@ class WebhookController extends Controller
     }
 
     /**
-     * Get payment details with retry logic.
+     * Get payment details from MercadoPago API with retry mechanism.
      *
      * @param string $paymentId
      * @param int $maxRetries
@@ -534,7 +514,7 @@ class WebhookController extends Controller
 
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
-                $paymentDetails = $apiHelper->getPayment($paymentId);
+                $paymentDetails = $apiHelper->get("/v1/payments/{$paymentId}");
 
                 if ($paymentDetails) {
                     return $paymentDetails;
@@ -564,7 +544,7 @@ class WebhookController extends Controller
     }
 
     /**
-     * Find order by external reference with improved matching.
+     * Find an order by its external reference.
      *
      * @param string $externalReference
      * @return Order|null
@@ -609,7 +589,7 @@ class WebhookController extends Controller
     }
 
     /**
-     * Update order status based on payment details with comprehensive handling.
+     * Update order status based on payment details.
      *
      * @param Order $order
      * @param array $paymentDetails
@@ -680,7 +660,7 @@ class WebhookController extends Controller
     }
 
     /**
-     * Handle approved payment with enhanced invoice creation.
+     * Handle an approved payment.
      *
      * @param Order $order
      * @param array $paymentDetails
@@ -740,7 +720,7 @@ class WebhookController extends Controller
     }
 
     /**
-     * Handle rejected payment.
+     * Handle a rejected payment.
      *
      * @param Order $order
      * @param array $paymentDetails
@@ -766,7 +746,7 @@ class WebhookController extends Controller
     }
 
     /**
-     * Handle refunded payment with refund creation.
+     * Handle a refunded or partially refunded payment.
      *
      * @param Order $order
      * @param array $paymentDetails
@@ -833,7 +813,7 @@ class WebhookController extends Controller
     }
 
     /**
-     * Handle pending payment.
+     * Handle a payment that is still pending.
      *
      * @param Order $order
      * @param array $paymentDetails
@@ -859,7 +839,7 @@ class WebhookController extends Controller
     }
 
     /**
-     * Get webhook secret from configuration.
+     * Get the webhook secret from config.
      *
      * @return string|null
      */
