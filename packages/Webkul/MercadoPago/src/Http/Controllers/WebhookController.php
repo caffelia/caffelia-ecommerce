@@ -215,7 +215,7 @@ class WebhookController extends Controller
         $lock = Cache::lock($lockKey, 10); // Lock for 10 seconds
 
         if ($lock->get()) {
-            $isProcessed = WebhookEvent::where('event_id', $eventId)
+            $isProcessed = WebhookEvent::where('payment_id', $eventId)
                 ->where('status', '!=', 'pending') // Consider 'error' as processed to avoid retries
                 ->exists();
 
@@ -251,9 +251,9 @@ class WebhookController extends Controller
         return DB::transaction(function () use ($request, $webhookId, $eventType, $action) {
             return WebhookEvent::create([
                 'webhook_id'      => $webhookId,
-                'event_id'        => $request->input('data.id') ?? $request->input('id'),
+                'payment_id'        => $request->input('data.id') ?? $request->input('id'),
                 'event_type'      => $eventType,
-                'event_action'    => $action,
+                'action'    => $action,
                 'payload'         => $request->all(),
                 'headers'         => $request->headers->all(),
                 'ip_address'      => $request->ip(),
