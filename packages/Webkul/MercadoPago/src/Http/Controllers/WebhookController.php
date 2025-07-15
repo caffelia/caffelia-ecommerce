@@ -54,21 +54,10 @@ class WebhookController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
 
-            // Validate webhook payload and signature
-            $validationResult = $this->validateWebhook($request);
-            if (!$validationResult['valid']) {
-                logger()->warning('MercadoPago Webhook - Validation failed', [
-                    'webhook_id' => $webhookId,
-                    'reason' => $validationResult['reason'],
-                    'ip' => $request->ip(),
-                ]);
-                return response($validationResult['reason'], 400);
-            }
-
             $data = $request->all();
             $eventType = $data['type'] ?? $data['topic'] ?? '';
             $action = $data['action'] ?? '';
-            $eventId = $request->input('data.id') ?? $request->input('id');
+            $eventId = $request->input('id');
 
             // Check for idempotency - prevent duplicate processing
             if ($this->isDuplicateEvent($eventId, $webhookId)) {
@@ -165,19 +154,19 @@ class WebhookController extends Controller
     }
 
     /**
-     * Verify the signature of the incoming webhook request.
+     * Verify the signature of the incoming webhook request according to MercadoPago's documentation.
      */
     private function isValidSignature(Request $request): bool
     {
-        $secret = config('services.mercadopago.webhook_secret');
+        $secret = $this->getWebhookSecret();
 
         if (empty($secret)) {
             logger()->error('MercadoPago Webhook - Webhook secret is not configured.');
-
             return false;
         }
 
         $signatureHeader = $request->header('x-signature');
+        $requestId = $request->header('x-request-id');
 
         if (! $signatureHeader) {
             return false;
@@ -185,140 +174,27 @@ class WebhookController extends Controller
 
         $parts = collect(explode(',', $signatureHeader))->mapWithKeys(function ($part) {
             [$key, $value] = explode('=', $part, 2);
-
             return [trim($key) => trim($value)];
         });
 
-        if (! $parts->has('ts') || ! $parts->has('v1')) {
+        $ts = $parts->get('ts');
+        $v1 = $parts->get('v1');
+
+        if (! $ts || ! $v1) {
             return false;
         }
 
-        // The signature is always built using the top-level Notification ID.
-        $eventId = $request->input('id');
+        $dataId = $request->input('data.id');
 
-        if (! $eventId) {
-            logger()->warning('MercadoPago Webhook - Notification ID (id) not found in payload.', [
-                'payload' => $request->all(),
-            ]);
-
+        if (! $dataId) {
             return false;
         }
 
-        $timestamp = $parts->get('ts');
+        $manifest = "id:{$dataId};request-id:{$requestId};ts:{$ts};";
 
-        $signedPayload = sprintf(
-            'id:%s;request-id:%s;ts:%s;',
-            $eventId,
-            $request->header('x-request-id'),
-            $timestamp
-        );
+        $expectedSignature = hash_hmac('sha256', $manifest, $secret);
 
-        $expectedSignature = hash_hmac('sha256', $signedPayload, $secret);
-
-        return hash_equals($expectedSignature, $parts->get('v1'));
-    }
-
-    /**
-     * Validate webhook signature and data.
-     *
-     * @param Request $request
-     * @return array
-     */
-    private function validateWebhook(Request $request): array
-    {
-        $data = $request->all();
-
-        // Basic validation - check if required fields are present
-        if (!isset($data['type']) || !isset($data['data'])) {
-            return [
-                'valid' => false,
-                'reason' => 'Missing required fields (type, data)',
-            ];
-        }
-
-        // Validate webhook source IP (MercadoPago IP ranges)
-        if (!$this->isValidMercadoPagoIP($request->ip())) {
-            return [
-                'valid' => false,
-                'reason' => 'Invalid source IP',
-            ];
-        }
-
-        // Enhanced signature validation if webhook secret is configured
-        $webhookSecret = $this->getWebhookSecret();
-        if ($webhookSecret) {
-            $signature = $request->header('x-signature');
-            $timestamp = $request->header('x-request-id');
-
-            if (!$signature) {
-                return [
-                    'valid' => false,
-                    'reason' => 'Missing webhook signature',
-                ];
-            }
-
-            if (!$this->validateSignature($request->getContent(), $signature, $webhookSecret, $timestamp)) {
-                return [
-                    'valid' => false,
-                    'reason' => 'Invalid webhook signature',
-                ];
-            }
-        }
-
-        return [
-            'valid' => true,
-            'reason' => '',
-        ];
-    }
-
-    /**
-     * Check if an IP address is within a given CIDR range.
-     *
-     * @param string $ip
-     * @param string $range
-     * @return bool
-     */
-    private function isValidMercadoPagoIP(string $ip): bool
-    {
-        // Add known MercadoPago IP ranges for validation
-        // Note: These ranges may change. It's best to keep them updated from official documentation.
-        $allowedRanges = [
-            '18.228.0.0/16',
-            '18.232.0.0/16',
-            '34.192.0.0/12',
-            '52.0.0.0/11',
-            // Add more ranges as needed
-        ];
-
-        foreach ($allowedRanges as $range) {
-            if ($this->ipInRange($ip, $range)) {
-                return true;
-            }
-        }
-
-        logger()->warning('MercadoPago Webhook - Request from non-whitelisted IP', [
-            'ip' => $ip,
-        ]);
-
-        return false;
-    }
-
-    /**
-     * Check if an IP address is within a given CIDR range.
-     *
-     * @param string $ip
-     * @param string $range
-     * @return bool
-     */
-    private function ipInRange(string $ip, string $range): bool
-    {
-        [$subnet, $bits] = explode('/', $range);
-        $ip = ip2long($ip);
-        $subnet = ip2long($subnet);
-        $mask = -1 << (32 - $bits);
-        $subnet &= $mask; // Discard host bits
-
-        return ($ip & $mask) == $subnet;
+        return hash_equals($expectedSignature, $v1);
     }
 
     /**
