@@ -1,0 +1,62 @@
+services:
+  # PostgreSQL 17.5 - Replaces MySQL
+  database:
+    image: postgres:17.5-alpine
+    container_name: caffelia-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: caffelia_ecommerce
+      POSTGRES_USER: caffelia
+      POSTGRES_PASSWORD: caffelia
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U caffelia -d caffelia_ecommerce"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - caffelia-network
+
+  # Redis 7.4.3 - For caching and sessions
+  redis:
+    image: redis:7.4.3-alpine
+    container_name: caffelia-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    networks:
+      - caffelia-network
+
+  # Mailpit - For local email testing
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: caffelia-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - caffelia-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  caffelia-network:
+    driver: bridge
