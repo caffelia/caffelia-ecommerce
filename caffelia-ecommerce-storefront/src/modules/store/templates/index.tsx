@@ -25,8 +25,17 @@ const StoreTemplate = ({
     >
       <RefinementList sortBy={sort} />
       <div className="w-full">
-        <div className="mb-8 text-2xl-semi">
-          <h1 data-testid="store-page-title">All products</h1>
+        <div className="mb-8 text-center">
+          <h1 
+            className="text-3xl font-bold text-secondary-900 mb-2 tracking-tight" 
+            data-testid="store-page-title"
+          >
+            CAFÉS DE ESPECIALIDAD
+          </h1>
+          <p className="text-neutral-600 text-base max-w-2xl mx-auto">
+            Explora nuestros cafés cuidadosamente seleccionados de las mejores fincas del mundo. 
+            Cada variedad ofrece un perfil de sabor único para una experiencia extraordinaria.
+          </p>
         </div>
         <Suspense fallback={<SkeletonProductGrid />}>
           <PaginatedProducts
