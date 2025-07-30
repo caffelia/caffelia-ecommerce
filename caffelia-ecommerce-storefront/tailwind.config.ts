@@ -1,6 +1,38 @@
-const path = require("path")
+import type { Config } from "tailwindcss";
 
-module.exports = {
+function generateColors(baseColor: string) {
+  const lighten = (color: string, amount: number) => {
+    const num = parseInt(color.slice(1), 16);
+    const r = Math.min(255, ((num >> 16) & 0xff) + amount);
+    const g = Math.min(255, ((num >> 8) & 0xff) + amount);
+    const b = Math.min(255, (num & 0xff) + amount);
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  };
+
+  const darken = (color: string, amount: number) => {
+    const num = parseInt(color.slice(1), 16);
+    const r = Math.max(0, ((num >> 16) & 0xff) - amount);
+    const g = Math.max(0, ((num >> 8) & 0xff) - amount);
+    const b = Math.max(0, (num & 0xff) - amount);
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  };
+
+  return {
+    50: lighten(baseColor, 160),
+    100: lighten(baseColor, 130),
+    200: lighten(baseColor, 100),
+    300: lighten(baseColor, 70),
+    400: lighten(baseColor, 40),
+    500: baseColor,
+    600: darken(baseColor, 30),
+    700: darken(baseColor, 60),
+    800: darken(baseColor, 90),
+    900: darken(baseColor, 110),
+    950: darken(baseColor, 130),
+  };
+}
+
+export default {
   darkMode: "class",
   presets: [require("@medusajs/ui-preset")],
   content: [
@@ -21,19 +53,15 @@ module.exports = {
         padding: "padding-top padding-right padding-bottom padding-left",
       },
       colors: {
-        grey: {
-          0: "#FFFFFF",
-          5: "#F9FAFB",
-          10: "#F3F4F6",
-          20: "#E5E7EB",
-          30: "#D1D5DB",
-          40: "#9CA3AF",
-          50: "#6B7280",
-          60: "#4B5563",
-          70: "#374151",
-          80: "#1F2937",
-          90: "#111827",
-        },
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        'primary': generateColors('#E89155'),
+        'secondary': generateColors('#CD0405'),
+        'accent': generateColors('#8E1811'),
+        neutral: {
+          light: generateColors('#ED8787'),
+          dark: generateColors('#310303')
+        }
       },
       borderRadius: {
         none: "0px",
@@ -129,12 +157,12 @@ module.exports = {
           },
         },
         enter: {
-          "0%": { transform: "scale(0.9)", opacity: 0 },
-          "100%": { transform: "scale(1)", opacity: 1 },
+          "0%": { transform: "scale(0.9)", opacity: '0' },
+          "100%": { transform: "scale(1)", opacity: '1' },
         },
         leave: {
-          "0%": { transform: "scale(1)", opacity: 1 },
-          "100%": { transform: "scale(0.9)", opacity: 0 },
+          "0%": { transform: "scale(1)", opacity: '1' },
+          "100%": { transform: "scale(0.9)", opacity: '0' },
         },
         "slide-in": {
           "0%": { transform: "translateY(-100%)" },
@@ -158,5 +186,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-radix")()],
-}
+  plugins: [],
+} satisfies Config;
