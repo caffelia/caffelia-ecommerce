@@ -142,14 +142,12 @@ export default async function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
+                    href="/privacy-policy"
                     className="hover:text-ui-fg-base"
                   >
                     Privacy Policy
-                  </a>
+                  </LocalizedClientLink>
                 </li>
               </ul>
             </div>
