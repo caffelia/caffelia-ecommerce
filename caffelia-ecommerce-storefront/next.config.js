@@ -36,6 +36,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
       },
+      {
+        protocol: "https",
+        hostname: "caffelia-ecommerce-prod.s3.us-east-2.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "caffelia-ecommerce-dev.s3.us-east-2.amazonaws.com",
+      },
     ],
   },
 }
