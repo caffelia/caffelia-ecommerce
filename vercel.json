@@ -1,7 +1,7 @@
 {
     "crons": [
       {
-        "path": "https://caffelia-ecommerce.onrender.com/health",
+        "path": "/api/ping-render",
         "schedule": "*/14 * * * *"
       }
     ]
