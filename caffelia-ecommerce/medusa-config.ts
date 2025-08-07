@@ -33,5 +33,8 @@ module.exports = defineConfig({
         ],
       },
     },
+    {
+      resolve: "./src/modules/cart-session",
+    },
   ],
 })
