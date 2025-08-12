@@ -1,5 +1,16 @@
+import { listCategories } from "@lib/data/categories"
+import { listCollections } from "@lib/data/collections"
 import { Text, clx } from "@medusajs/ui"
+
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+
+
+import Mastercard from "@modules/common/icons/mastercard"
+import AmericanExpress from "@modules/common/icons/american-express"
+import DinersClub from "@modules/common/icons/diners-club"
+import Codensa from "@modules/common/icons/codensa"
+import PSE from "@modules/common/icons/pse"
+import Efecty from "@modules/common/icons/efecty"
 
 import Facebook from "@modules/common/icons/facebook"
 import Instagram from "@modules/common/icons/instagram"
@@ -10,6 +21,11 @@ import Mail from "@modules/common/icons/mail"
 import MercadoPagoMethods from "@modules/common/icons/mercadopago-methods"
 
 export default async function Footer() {
+  const { collections } = await listCollections({
+    fields: "*products",
+  })
+  const productCategories = await listCategories()
+
   return (
     <footer className="border-t border-ui-border-base w-full">
       <div className="content-container flex flex-col w-full">
@@ -22,8 +38,8 @@ export default async function Footer() {
               Caffelia
             </LocalizedClientLink>
             <p className="text-sm max-w-xs">
-              We have clothes that suits your style and which you&apos;re proud
-              to wear. From coffee accessories to lifestyle products.
+              Disfruta del auténtico café de especialidad de Colombia.
+              Descubre sabores únicos en cada taza.
             </p>
             <div className="flex gap-x-4">
               <a
@@ -55,7 +71,7 @@ export default async function Footer() {
           <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-3 sm:grid-cols-3">
             <div className="flex flex-col gap-y-2">
               <span className="txt-small-plus txt-ui-fg-base font-semibold">
-                Company
+                Empresa
               </span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
@@ -65,7 +81,7 @@ export default async function Footer() {
                     rel="noreferrer"
                     className="hover:text-ui-fg-base"
                   >
-                    About
+                    Nosotros
                   </a>
                 </li>
                 <li>
@@ -75,7 +91,7 @@ export default async function Footer() {
                     rel="noreferrer"
                     className="hover:text-ui-fg-base"
                   >
-                    Features
+                    Características
                   </a>
                 </li>
                 <li>
@@ -85,7 +101,7 @@ export default async function Footer() {
                     rel="noreferrer"
                     className="hover:text-ui-fg-base"
                   >
-                    Works
+                    Cómo funciona
                   </a>
                 </li>
                 <li>
@@ -95,78 +111,70 @@ export default async function Footer() {
                     rel="noreferrer"
                     className="hover:text-ui-fg-base"
                   >
-                    Career
+                    Carrera
                   </a>
                 </li>
               </ul>
             </div>
             <div className="flex flex-col gap-y-2">
               <span className="txt-small-plus txt-ui-fg-base font-semibold">
-                Help
+                Ayuda
               </span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
-                  <a
-                    href="#"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
+                    href="/customer-support"
                     className="hover:text-ui-fg-base"
                   >
-                    Customer Support
-                  </a>
+                    Atención al cliente
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
+                    href="/delivery-details"
                     className="hover:text-ui-fg-base"
                   >
-                    Delivery Details
-                  </a>
+                    Detalles de envío
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
+                    href="/terms-and-conditions"
                     className="hover:text-ui-fg-base"
                   >
-                    Terms & Conditions
-                  </a>
+                    Términos y Condiciones
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
+                    href="/privacy-policy"
                     className="hover:text-ui-fg-base"
                   >
-                    Privacy Policy
-                  </a>
+                    Política de Privacidad
+                  </LocalizedClientLink>
                 </li>
               </ul>
             </div>
             <div className="flex flex-col gap-y-2">
               <span className="txt-small-plus txt-ui-fg-base font-semibold">
-                Contact
+                Contacto
               </span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li className="flex items-center gap-x-2">
                   <MapPin size={16} />
-                  <span>123 Coffee Street, Bean City, BC 12345</span>
+                  <span>Carrera 1 # 26 - 31, Cartago, Colombia</span>
                 </li>
                 <li className="flex items-center gap-x-2">
                   <Phone size={16} />
-                  <span>+1 (555) 123-4567</span>
+                  <span>+57 311 524 4162</span>
                 </li>
                 <li className="flex items-center gap-x-2">
                   <Mail size={16} />
                   <a
-                    href="mailto:hello@caffelia.com"
+                    href="mailto:admin@caffelia.co"
                     className="hover:text-ui-fg-base"
                   >
-                    hello@caffelia.com
+                    admin@caffelia.co
                   </a>
                 </li>
               </ul>
@@ -175,7 +183,7 @@ export default async function Footer() {
         </div>
         <div className="flex w-full mb-8 justify-between text-ui-fg-muted">
           <Text className="txt-compact-small">
-            © {new Date().getFullYear()} Caffelia. All rights reserved.
+            © {new Date().getFullYear()} Caffelia. Todos los derechos reservados.
           </Text>
           <div className="flex items-center gap-x-2">
             <div className="flex gap-x-2">

@@ -36,8 +36,8 @@ async function getRegionMap(cacheId: string) {
     }).then(async (response) => {
       const json = await response.json()
 
-      if (!response.ok) {
-        throw new Error(json.message)
+      if (!("regions" in json)) {
+        throw new Error("No regions found in response")
       }
 
       return json
