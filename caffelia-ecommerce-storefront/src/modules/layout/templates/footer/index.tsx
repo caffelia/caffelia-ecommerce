@@ -7,13 +7,7 @@ import Twitter from "@modules/common/icons/twitter"
 import MapPin from "@modules/common/icons/map-pin"
 import Phone from "@modules/common/icons/phone"
 import Mail from "@modules/common/icons/mail"
-import Visa from "@modules/common/icons/visa"
-import Mastercard from "@modules/common/icons/mastercard"
-import AmericanExpress from "@modules/common/icons/american-express"
-import DinersClub from "@modules/common/icons/diners-club"
-import Codensa from "@modules/common/icons/codensa"
-import PSE from "@modules/common/icons/pse"
-import Efecty from "@modules/common/icons/efecty"
+import MercadoPagoMethods from "@modules/common/icons/mercadopago-methods"
 
 export default async function Footer() {
   return (
@@ -184,15 +178,8 @@ export default async function Footer() {
             © {new Date().getFullYear()} Caffelia. All rights reserved.
           </Text>
           <div className="flex items-center gap-x-2">
-            <span className="txt-compact-small">We accept:</span>
             <div className="flex gap-x-2">
-              <Visa />
-              <Mastercard />
-              <AmericanExpress />
-              <DinersClub />
-              <Codensa />
-              <PSE />
-              <Efecty />
+              <MercadoPagoMethods size="40" />
             </div>
           </div>
         </div>
