@@ -1,25 +1,40 @@
-import { Heading, Text } from "@medusajs/ui"
+import { Heading, Text, Button } from "@medusajs/ui";
+import Image from "next/image"; 
 
-import InteractiveLink from "@modules/common/components/interactive-link"
+import LocalizedClientLink from "@modules/common/components/localized-client-link";
+import { ArrowUpRightMini } from "@medusajs/icons";
 
 const EmptyCartMessage = () => {
   return (
-    <div className="py-48 px-2 flex flex-col justify-center items-start" data-testid="empty-cart-message">
-      <Heading
-        level="h1"
-        className="flex flex-row text-3xl-regular gap-x-2 items-baseline"
-      >
-        Cart
-      </Heading>
-      <Text className="text-base-regular mt-4 mb-6 max-w-[32rem]">
-        You don&apos;t have anything in your cart. Let&apos;s change that, use
-        the link below to start browsing our products.
-      </Text>
-      <div>
-        <InteractiveLink href="/store">Explore products</InteractiveLink>
+    <div className="py-12 bg-gray-50 rounded-lg shadow-sm">
+      <div className="content-container flex flex-col justify-center items-center text-center">
+        <Image
+          src="/images/empty-cart.jpg" 
+          alt="Carrito vacío"
+          width={200}
+          height={200}
+          className="mb-6"
+        />
+        <Heading
+          level="h1"
+          className="text-3xl font-semibold text-primary-900 mb-2"
+        >
+          Tu carrito está vacío
+        </Heading>
+        <Text className="text-md text-neutral-dark-600 mb-6 max-w-sm">
+          Parece que aún no has añadido nada a tu carrito. ¡Empieza a explorar nuestros productos!
+        </Text>
+        <div>
+          <LocalizedClientLink href="/store" passHref>
+            <Button className="bg-primary-500 text-white hover:bg-primary-600 transition-colors duration-200 h-12 px-6 flex items-center gap-x-2">
+              <span>Ir a la tienda</span>
+              <ArrowUpRightMini />
+            </Button>
+          </LocalizedClientLink>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EmptyCartMessage
+export default EmptyCartMessage;
