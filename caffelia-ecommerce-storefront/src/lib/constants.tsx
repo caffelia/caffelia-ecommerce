@@ -67,3 +67,22 @@ export const noDivisionCurrencies = [
   "xdr",
   "xau",
 ]
+
+export const SPANISH_LOCALE = "es"
+export const ENGLISH_LOCALE = "en"
+export const DEFAULT_LOCALE = SPANISH_LOCALE
+
+export const LOCALE_CONFIG = {
+  [SPANISH_LOCALE]: {
+    name: "Español",
+    flag: "🇪🇸",
+    currency: "EUR",
+    currencySymbol: "€",
+  },
+  [ENGLISH_LOCALE]: {
+    name: "English",
+    flag: "🇺🇸",
+    currency: "USD",
+    currencySymbol: "$",
+  },
+}
