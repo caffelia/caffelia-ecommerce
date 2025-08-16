@@ -336,10 +336,17 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
     if (!formData) {
       throw new Error("No form data found when setting addresses")
     }
-    const cartId = getCartId()
-    if (!cartId) {
+    const cid = getCartId()
+    if (!cid) {
       throw new Error("No existing cart found when setting addresses")
     }
+
+    const muniCode = formData
+      .get("shipping_address.metadata.muni_code")
+      ?.toString()
+      .padStart(5, "0") as string | undefined
+
+    const daneCode = muniCode ? `${muniCode}000` : undefined
 
     const data = {
       shipping_address: {
@@ -353,6 +360,14 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
         country_code: formData.get("shipping_address.country_code"),
         province: formData.get("shipping_address.province"),
         phone: formData.get("shipping_address.phone"),
+        metadata: {
+          barrio: formData.get("shipping_address.metadata.barrio") || undefined,
+          indicacion:
+            formData.get("shipping_address.metadata.indicacion") || undefined,
+          dept_code: formData.get("shipping_address.metadata.dept_code") || undefined,
+          municipality_code: muniCode || undefined,
+          dane_code: daneCode,
+        },
       },
       email: formData.get("email"),
     } as any

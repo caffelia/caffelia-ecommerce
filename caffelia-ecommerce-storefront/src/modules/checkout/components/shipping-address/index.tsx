@@ -6,6 +6,8 @@ import { mapKeys } from "lodash"
 import React, { useEffect, useMemo, useState } from "react"
 import AddressSelect from "../address-select"
 import CountrySelect from "../country-select"
+import NativeSelect from "@modules/common/components/native-select"
+import { sdk } from "@lib/config"
 
 const ShippingAddress = ({
   customer,
@@ -28,8 +30,21 @@ const ShippingAddress = ({
     "shipping_address.country_code": cart?.shipping_address?.country_code || "",
     "shipping_address.province": cart?.shipping_address?.province || "",
     "shipping_address.phone": cart?.shipping_address?.phone || "",
+    "shipping_address.metadata.barrio":
+      (cart?.shipping_address as any)?.metadata?.barrio || "",
+    "shipping_address.metadata.indicacion":
+      (cart?.shipping_address as any)?.metadata?.indicacion || "",
+    // New metadata fields for department/municipality codes
+    "shipping_address.metadata.dept_code": (cart?.shipping_address as any)?.metadata?.dept_code || "",
+    "shipping_address.metadata.muni_code": (cart?.shipping_address as any)?.metadata?.municipality_code || "",
     email: cart?.email || "",
   })
+
+  const [departments, setDepartments] = useState<Array<{ dept_code: string; name: string }>>([])
+  const [municipalities, setMunicipalities] = useState<Array<{ muni_code: string; name: string }>>([])
+
+  const selectedDept = formData["shipping_address.metadata.dept_code"] as string
+  const selectedMuni = formData["shipping_address.metadata.muni_code"] as string
 
   const countriesInRegion = useMemo(
     () => cart?.region?.countries?.map((c) => c.iso_2),
@@ -61,6 +76,10 @@ const ShippingAddress = ({
         "shipping_address.country_code": address?.country_code || "",
         "shipping_address.province": address?.province || "",
         "shipping_address.phone": address?.phone || "",
+        "shipping_address.metadata.barrio": (address as any)?.metadata?.barrio || "",
+        "shipping_address.metadata.indicacion": (address as any)?.metadata?.indicacion || "",
+        "shipping_address.metadata.dept_code": (address as any)?.metadata?.dept_code || "",
+        "shipping_address.metadata.muni_code": (address as any)?.metadata?.municipality_code || "",
       }))
 
     email &&
@@ -80,6 +99,43 @@ const ShippingAddress = ({
       setFormAddress(undefined, customer.email)
     }
   }, [cart]) // Add cart as a dependency
+
+  // Fetch departments once
+  useEffect(() => {
+    sdk.client
+      .fetch<{ departments: Array<{ dept_code: string; name: string }> }>(
+        "/store/geo/departments",
+        { method: "GET" }
+      )
+      .then((data) => setDepartments(data.departments || []))
+      .catch(() => setDepartments([]))
+  }, [])
+
+  // Fetch municipalities when department changes
+  useEffect(() => {
+    if (!selectedDept) {
+      setMunicipalities([])
+      return
+    }
+    sdk.client
+      .fetch<{ municipalities: Array<{ muni_code: string; name: string }> }>(
+        "/store/geo/municipalities",
+        { method: "GET", query: { dept_code: selectedDept } as any }
+      )
+      .then((data) => setMunicipalities(data.municipalities || []))
+      .catch(() => setMunicipalities([]))
+  }, [selectedDept])
+
+  // Keep city/province text fields aligned with selected muni/dept for compatibility
+  useEffect(() => {
+    const muniName = municipalities.find((m) => m.muni_code === selectedMuni)?.name || ""
+    const deptName = departments.find((d) => d.dept_code === selectedDept)?.name || ""
+    setFormData((prev) => ({
+      ...prev,
+      "shipping_address.city": muniName,
+      "shipping_address.province": deptName,
+    }))
+  }, [selectedDept, selectedMuni, municipalities, departments])
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -138,32 +194,7 @@ const ShippingAddress = ({
           required
           data-testid="shipping-address-input"
         />
-        <Input
-          label="Company"
-          name="shipping_address.company"
-          value={formData["shipping_address.company"]}
-          onChange={handleChange}
-          autoComplete="organization"
-          data-testid="shipping-company-input"
-        />
-        <Input
-          label="Postal code"
-          name="shipping_address.postal_code"
-          autoComplete="postal-code"
-          value={formData["shipping_address.postal_code"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-postal-code-input"
-        />
-        <Input
-          label="City"
-          name="shipping_address.city"
-          autoComplete="address-level2"
-          value={formData["shipping_address.city"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-city-input"
-        />
+        {/* 1) Country */}
         <CountrySelect
           name="shipping_address.country_code"
           autoComplete="country"
@@ -173,14 +204,81 @@ const ShippingAddress = ({
           required
           data-testid="shipping-country-select"
         />
+        {/* 2) Department */}
+        <div>
+          <label className="text-small-regular mb-1 block">Departamento</label>
+          <NativeSelect
+            name="shipping_address.metadata.dept_code"
+            value={selectedDept}
+            onChange={handleChange}
+            placeholder="Seleccionar..."
+            required
+            data-testid="shipping-dept-select"
+          >
+            {departments.map((d) => (
+              <option key={d.dept_code} value={d.dept_code}>
+                {d.name}
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
+        {/* 3) City */}
+        <div>
+          <label className="text-small-regular mb-1 block">Ciudad</label>
+          <NativeSelect
+            name="shipping_address.metadata.muni_code"
+            value={selectedMuni}
+            onChange={handleChange}
+            placeholder={selectedDept ? "Seleccionar..." : "Seleccione un departamento primero"}
+            required
+            disabled={!selectedDept}
+            data-testid="shipping-muni-select"
+          >
+            {municipalities.map((m) => (
+              <option key={m.muni_code} value={m.muni_code}>
+                {m.name}
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
+        {/* 4) Neighborhood */}
         <Input
-          label="State / Province"
-          name="shipping_address.province"
-          autoComplete="address-level1"
-          value={formData["shipping_address.province"]}
+          label="Barrio"
+          name="shipping_address.metadata.barrio"
+          value={formData["shipping_address.metadata.barrio"]}
           onChange={handleChange}
-          data-testid="shipping-province-input"
+          data-testid="shipping-barrio-input"
         />
+        {/* 5) Indications */}
+        <Input
+          label="Indicaciones"
+          name="shipping_address.metadata.indicacion"
+          value={formData["shipping_address.metadata.indicacion"]}
+          onChange={handleChange}
+          data-testid="shipping-indicacion-input"
+        />
+        {/* 6) Postal code */}
+        <Input
+          label="Postal code"
+          name="shipping_address.postal_code"
+          autoComplete="postal-code"
+          value={formData["shipping_address.postal_code"]}
+          onChange={handleChange}
+          required
+          data-testid="shipping-postal-code-input"
+        />
+        {/* Company (kept after prioritized fields) */}
+        <Input
+          label="Company"
+          name="shipping_address.company"
+          value={formData["shipping_address.company"]}
+          onChange={handleChange}
+          autoComplete="organization"
+          data-testid="shipping-company-input"
+        />
+        {/* Hidden city/province inputs still present in form submission */}
+        <input type="hidden" name="shipping_address.city" value={formData["shipping_address.city"]} />
+        <input type="hidden" name="shipping_address.province" value={formData["shipping_address.province"]} />
       </div>
       <div className="my-8">
         <Checkbox

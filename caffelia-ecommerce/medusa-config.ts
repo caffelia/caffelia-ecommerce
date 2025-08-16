@@ -15,6 +15,24 @@ module.exports = defineConfig({
   },
   modules: [
     {
+      resolve: "@medusajs/medusa/fulfillment",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/mipaquete",
+            id: "mipaquete",
+            options: {
+              apiKey: process.env.MIPAQUETE_API_KEY,
+              sessionTracker: process.env.MIPAQUETE_SESSION_TRACKER,
+              originDaneCode:
+                process.env.MIPAQUETE_ORIGIN_DANE_CODE || "11001000",
+              baseUrl: process.env.MIPAQUETE_BASE_URL,
+            },
+          },
+        ],
+      },
+    },
+    {
       resolve: "@medusajs/medusa/file",
       options: {
         providers: [
@@ -35,6 +53,9 @@ module.exports = defineConfig({
     },
     {
       resolve: "./src/modules/cart-session",
+    },
+    {
+      resolve: "./src/modules/geo",
     },
   ],
 })

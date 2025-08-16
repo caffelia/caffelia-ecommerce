@@ -1,8 +1,9 @@
 {
-    "crons": [
-      {
-        "path": "/api/ping-render",
-        "schedule": "*/14 * * * *"
-      }
-    ]
-  }
+  "crons": [
+    {
+      "path": "/api/ping-render",
+      "schedule": "*/14 * * * *"
+    }
+  ]
+}
+
