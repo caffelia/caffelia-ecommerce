@@ -55,6 +55,9 @@ module.exports = defineConfig({
       resolve: "./src/modules/cart-session",
     },
     {
+      resolve: "./src/modules/chat-session",
+    },
+    {
       resolve: "./src/modules/geo",
     },
   ],
