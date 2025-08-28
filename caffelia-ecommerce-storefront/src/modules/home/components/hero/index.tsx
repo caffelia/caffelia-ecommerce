@@ -1,4 +1,9 @@
 import { Button, Heading } from "@medusajs/ui"
+import UnderlineLink from "@modules/common/components/underline-link"
+import Image from "next/image"
+import Facebook from "@modules/common/icons/facebook"
+import Instagram from "@modules/common/icons/instagram"
+import Twitter from "@modules/common/icons/twitter"
 
 const Hero = () => {
   return (
@@ -80,15 +85,30 @@ const Hero = () => {
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-300">Síguenos:</span>
               <div className="flex space-x-3">
-                <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors">
-                  <span className="text-white text-xs font-bold">IG</span>
-                </div>
-                <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors">
-                  <span className="text-white text-xs font-bold">FB</span>
-                </div>
-                <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors">
-                  <span className="text-white text-xs font-bold">TW</span>
-                </div>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors"
+                >
+                  <Instagram className="text-white" />
+                </a>
+                <a
+                  href="https://facebook.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors"
+                >
+                  <Facebook className="text-white" />
+                </a>
+                <a
+                  href="https://twitter.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors"
+                >
+                  <Twitter className="text-white" />
+                </a>
               </div>
             </div>
           </div>

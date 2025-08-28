@@ -88,6 +88,7 @@ export default {
       },
       fontFamily: {
         sans: [
+          "var(--font-poppins)",
           "Inter",
           "-apple-system",
           "BlinkMacSystemFont",
