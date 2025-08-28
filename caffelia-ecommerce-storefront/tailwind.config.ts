@@ -92,6 +92,9 @@ export default {
           "var(--font-lexend)",
           "var(--font-jetbrains-mono)",
         ],
+        "bebas-neue": ["var(--font-bebas-neue)"],
+        "lexend": ["var(--font-lexend)"],
+        "jetbrains-mono": ["var(--font-jetbrains-mono)"],
       },
       keyframes: {
         ring: {
