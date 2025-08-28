@@ -1,7 +1,7 @@
-import { getBaseURL } from "@lib/util/env"
-import { Metadata } from "next"
-import "styles/globals.css"
-import { Bebas_Neue, JetBrains_Mono, Lexend } from "next/font/google"
+import { getBaseURL } from "@lib/util/env";
+import { Metadata } from "next";
+import { Bebas_Neue, JetBrains_Mono, Lexend } from "next/font/google";
+import "styles/globals.css";
 
 const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
