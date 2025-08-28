@@ -12,6 +12,8 @@ coverage
 
 !src/**
 
+yarn.lock
+
 ./tsconfig.tsbuildinfo
 medusa-db.sql
 build

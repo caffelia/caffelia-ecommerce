@@ -4,6 +4,7 @@ import { CreditCard } from "@medusajs/icons"
 import Ideal from "@modules/common/icons/ideal"
 import Bancontact from "@modules/common/icons/bancontact"
 import PayPal from "@modules/common/icons/paypal"
+import MercadoPagoMethods from "@modules/common/icons/mercadopago-methods"
 
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
 export const paymentInfoMap: Record<
@@ -12,23 +13,23 @@ export const paymentInfoMap: Record<
 > = {
   pp_stripe_stripe: {
     title: "Credit card",
-    icon: <CreditCard />,
+    icon: <MercadoPagoMethods size="32" />,
   },
   "pp_stripe-ideal_stripe": {
     title: "iDeal",
-    icon: <Ideal />,
+    icon: <MercadoPagoMethods size="32" />,
   },
   "pp_stripe-bancontact_stripe": {
     title: "Bancontact",
-    icon: <Bancontact />,
+    icon: <MercadoPagoMethods size="32" />,
   },
   pp_paypal_paypal: {
     title: "PayPal",
-    icon: <PayPal />,
+    icon: <MercadoPagoMethods size="32" />,
   },
   pp_system_default: {
     title: "Manual Payment",
-    icon: <CreditCard />,
+    icon: <MercadoPagoMethods size="32" />,
   },
   // Add more payment providers here
 }
@@ -66,3 +67,22 @@ export const noDivisionCurrencies = [
   "xdr",
   "xau",
 ]
+
+export const SPANISH_LOCALE = "es"
+export const ENGLISH_LOCALE = "en"
+export const DEFAULT_LOCALE = SPANISH_LOCALE
+
+export const LOCALE_CONFIG = {
+  [SPANISH_LOCALE]: {
+    name: "Español",
+    flag: "🇪🇸",
+    currency: "EUR",
+    currencySymbol: "€",
+  },
+  [ENGLISH_LOCALE]: {
+    name: "English",
+    flag: "🇺🇸",
+    currency: "USD",
+    currencySymbol: "$",
+  },
+}

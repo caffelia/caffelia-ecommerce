@@ -10,36 +10,43 @@ type Props = {
 
 export async function generateStaticParams() {
   try {
-    const countryCodes = await listRegions().then((regions) =>
-      regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat()
-    )
-
-    if (!countryCodes) {
+    const regions = await listRegions()
+    if (!regions) {
       return []
     }
 
-    const promises = countryCodes.map(async (country) => {
-      const { response } = await listProducts({
-        countryCode: country,
-        queryParams: { limit: 100, fields: "handle" },
-      })
+    const allParams = []
 
-      return {
-        country,
-        products: response.products,
+    for (const region of regions) {
+      if (!region.countries) continue
+      
+      for (const country of region.countries) {
+        if (!country.iso_2) continue
+        
+        try {
+          const { response } = await listProducts({
+            countryCode: country.iso_2,
+            queryParams: { limit: 100, fields: "handle" },
+          })
+
+          if (response.products) {
+            for (const product of response.products) {
+              if (product.handle) {
+                allParams.push({
+                  countryCode: country.iso_2,
+                  handle: product.handle,
+                })
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching products for ${country.iso_2}:`, error)
+          continue
+        }
       }
-    })
+    }
 
-    const countryProducts = await Promise.all(promises)
-
-    return countryProducts
-      .flatMap((countryData) =>
-        countryData.products.map((product) => ({
-          countryCode: countryData.country,
-          handle: product.handle,
-        }))
-      )
-      .filter((param) => param.handle)
+    return allParams
   } catch (error) {
     console.error(
       `Failed to generate static paths for product pages: ${

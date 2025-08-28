@@ -15,17 +15,19 @@ const Login = ({ setCurrentView }: Props) => {
 
   return (
     <div
-      className="max-w-sm w-full flex flex-col items-center bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-primary-200"
+      className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg border border-gray-200"
       data-testid="login-page"
     >
-      <h1 className="text-large-semi uppercase mb-6 text-secondary-900 font-bold">Bienvenido</h1>
-      <p className="text-center text-base-regular text-neutral-dark-700 mb-8 font-medium">
+      <h1 className="text-2xl font-bold text-center text-primary-900 mb-4">
+        BIENVENIDO
+      </h1>
+      <p className="text-center text-gray-600 mb-8">
         Inicia sesión para acceder a una experiencia de compra mejorada.
       </p>
       <form className="w-full" action={formAction}>
-        <div className="flex flex-col w-full gap-y-2">
+        <div className="flex flex-col w-full gap-y-4">
           <Input
-            label="Email"
+            label="Email *"
             name="email"
             type="email"
             title="Ingresa una dirección de email válida."
@@ -34,7 +36,7 @@ const Login = ({ setCurrentView }: Props) => {
             data-testid="email-input"
           />
           <Input
-            label="Contraseña"
+            label="Contraseña *"
             name="password"
             type="password"
             autoComplete="current-password"
@@ -43,24 +45,24 @@ const Login = ({ setCurrentView }: Props) => {
           />
         </div>
         <ErrorMessage error={message} data-testid="login-error-message" />
-        <SubmitButton 
-          data-testid="sign-in-button" 
-          className="w-full mt-6 bg-primary-500 hover:bg-primary-600 text-white font-semibold"
+        <SubmitButton
+          data-testid="sign-in-button"
+          className="w-full mt-6 h-11 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-md transition-colors duration-300"
         >
           Iniciar Sesión
         </SubmitButton>
       </form>
-      <span className="text-center text-neutral-dark-700 text-small-regular mt-6">
+      <div className="text-center text-gray-600 text-sm mt-6">
         ¿No eres miembro?{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
-          className="underline text-primary-600 hover:text-primary-700 font-medium transition-colors duration-200"
+          className="font-semibold text-primary-600 hover:text-primary-700 underline transition-colors duration-200"
           data-testid="register-button"
         >
           Únete a nosotros
         </button>
         .
-      </span>
+      </div>
     </div>
   )
 }

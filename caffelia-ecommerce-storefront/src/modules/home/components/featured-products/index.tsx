@@ -35,10 +35,7 @@ export default async function FeaturedProducts({
   return (
     <section className="relative overflow-hidden">
       {/* Enhanced Gradient Background for entire section */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-100 via-primary-50 to-white"></div>
-      <div className="absolute inset-0 bg-gradient-to-tr from-neutral-light-100/60 via-transparent to-primary-200/40"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(232,145,85,0.15),transparent_50%)]"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(205,4,5,0.08),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-red-50 to-amber-50"></div>
       
       {/* Content */}
       <div className="relative content-container py-16 small:py-24">

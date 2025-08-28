@@ -1,8 +1,11 @@
 import { Button, Heading } from "@medusajs/ui"
+import Facebook from "@modules/common/icons/facebook"
+import Instagram from "@modules/common/icons/instagram"
+import Twitter from "@modules/common/icons/x"
 
 const Hero = () => {
   return (
-    <div className="relative w-full bg-gradient-to-r from-primary-50 to-secondary-100 overflow-hidden">
+    <div className="relative w-full overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-20 right-20 w-8 h-8 bg-accent-600 transform rotate-45 opacity-60"></div>
       <div className="absolute top-32 right-32 w-6 h-6 bg-primary-400 rounded-full opacity-40"></div>
@@ -44,9 +47,12 @@ const Hero = () => {
           <div className="relative">
             {/* Placeholder for main image - replace with actual image */}
             <div className="w-full h-96 bg-gradient-to-br from-secondary-200 to-primary-300 rounded-2xl shadow-2xl flex items-center justify-center">
-              <span className="text-neutral-dark-600 text-xl font-medium">
-                Imagen de Café Premium
-              </span>
+              <img
+                src="/images/bg-caffelia-header.png"
+                alt="Café Premium"
+                className="w-full h-full object-cover rounded-2xl"
+                style={{ maxHeight: '100%' }}
+              />
             </div>
 
             {/* Decorative accent */}
@@ -80,15 +86,30 @@ const Hero = () => {
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-300">Síguenos:</span>
               <div className="flex space-x-3">
-                <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors">
-                  <span className="text-white text-xs font-bold">IG</span>
-                </div>
-                <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors">
-                  <span className="text-white text-xs font-bold">FB</span>
-                </div>
-                <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors">
-                  <span className="text-white text-xs font-bold">TW</span>
-                </div>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors"
+                >
+                  <Instagram className="text-white" />
+                </a>
+                <a
+                  href="https://facebook.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors"
+                >
+                  <Facebook className="text-white" />
+                </a>
+                <a
+                  href="https://twitter.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-500 transition-colors"
+                >
+                  <Twitter className="text-white" />
+                </a>
               </div>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import Image from "next/image"
 
 import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
@@ -11,7 +12,7 @@ export default async function Nav() {
 
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-gradient-to-r from-white to-primary-50 border-primary-200 shadow-sm">
+      <header className="relative h-16 mx-auto border-b duration-200 border-primary-200 bg-white shadow-sm py-5">
         <nav className="content-container txt-xsmall-plus text-neutral-dark-700 flex items-center justify-between w-full h-full text-small-regular">
           <div className="flex-1 basis-0 h-full flex items-center">
             <div className="h-full">
@@ -25,14 +26,19 @@ export default async function Nav() {
               className="txt-compact-xlarge-plus hover:text-primary-700 text-secondary-900 uppercase font-bold transition-colors duration-200"
               data-testid="nav-store-link"
             >
-              Caffelia
+              <Image
+                src="/images/caffelia-icon-red-1.png"
+                width={180}
+                height={40}
+                alt="Caffelia"
+              />
             </LocalizedClientLink>
           </div>
 
           <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
             <div className="hidden small:flex items-center gap-x-6 h-full">
               <LocalizedClientLink
-                className="txt-compact-small-plus hover:text-primary-700 text-neutral-dark-800 transition-colors duration-200"
+                className="text-lg hover:text-primary-700 text-neutral-dark-800 transition-colors duration-200"
                 href="/account"
                 data-testid="nav-account-link"
               >
@@ -42,7 +48,7 @@ export default async function Nav() {
             <Suspense
               fallback={
                 <LocalizedClientLink
-                  className="hover:text-primary-700 text-neutral-dark-800 flex gap-2 transition-colors duration-200"
+                  className="text-lg hover:text-primary-700 text-neutral-dark-800 flex gap-2 transition-colors duration-200"
                   href="/cart"
                   data-testid="nav-cart-link"
                 >

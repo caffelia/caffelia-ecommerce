@@ -1,4 +1,7 @@
-import { Text, clx } from "@medusajs/ui"
+import { listCategories } from "@lib/data/categories"
+import { listCollections } from "@lib/data/collections"
+import { Text } from "@medusajs/ui"
+
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 import Facebook from "@modules/common/icons/facebook"
@@ -7,15 +10,14 @@ import Twitter from "@modules/common/icons/twitter"
 import MapPin from "@modules/common/icons/map-pin"
 import Phone from "@modules/common/icons/phone"
 import Mail from "@modules/common/icons/mail"
-import Visa from "@modules/common/icons/visa"
-import Mastercard from "@modules/common/icons/mastercard"
-import AmericanExpress from "@modules/common/icons/american-express"
-import DinersClub from "@modules/common/icons/diners-club"
-import Codensa from "@modules/common/icons/codensa"
-import PSE from "@modules/common/icons/pse"
-import Efecty from "@modules/common/icons/efecty"
+import MercadoPagoMethods from "@modules/common/icons/mercadopago-methods"
 
 export default async function Footer() {
+  const { collections } = await listCollections({
+    fields: "*products",
+  })
+  const productCategories = await listCategories()
+
   return (
     <footer className="border-t border-ui-border-base w-full">
       <div className="content-container flex flex-col w-full">
@@ -28,8 +30,8 @@ export default async function Footer() {
               Caffelia
             </LocalizedClientLink>
             <p className="text-sm max-w-xs">
-              Disfruta del auténtico café de especialidad de Colombia.
-              Descubre sabores únicos en cada taza.
+              Disfruta del auténtico café de especialidad de Colombia. Descubre
+              sabores únicos en cada taza.
             </p>
             <div className="flex gap-x-4">
               <a
@@ -173,18 +175,12 @@ export default async function Footer() {
         </div>
         <div className="flex w-full mb-8 justify-between text-ui-fg-muted">
           <Text className="txt-compact-small">
-            © {new Date().getFullYear()} Caffelia. Todos los derechos reservados.
+            © {new Date().getFullYear()} Caffelia. Todos los derechos
+            reservados.
           </Text>
           <div className="flex items-center gap-x-2">
-            <span className="txt-compact-small">Aceptamos:</span>
             <div className="flex gap-x-2">
-              <Visa />
-              <Mastercard />
-              <AmericanExpress />
-              <DinersClub />
-              <Codensa />
-              <PSE />
-              <Efecty />
+              <MercadoPagoMethods size="40" />
             </div>
           </div>
         </div>

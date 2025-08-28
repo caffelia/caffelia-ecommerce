@@ -83,7 +83,7 @@ export default function ProductActions({
     }
 
     // If there is inventory available, we can add to cart
-    if (
+    if ( 
       selectedVariant?.manage_inventory &&
       (selectedVariant?.inventory_quantity || 0) > 0
     ) {
@@ -155,10 +155,10 @@ export default function ProductActions({
           data-testid="add-product-button"
         >
           {!selectedVariant && !options
-            ? "Select variant"
+            ? "Selecciona una opción"
             : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
+            ? "No disponible"
+            : "Agregar al carrito"}
         </Button>
         <MobileActions
           product={product}

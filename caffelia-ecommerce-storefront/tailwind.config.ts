@@ -55,9 +55,9 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        'primary': generateColors('#E89155'),
-        'secondary': generateColors('#CD0405'),
-        'accent': generateColors('#8E1811'),
+        'primary': generateColors('#9D0406'),
+        'secondary': generateColors('#E89154'),
+        'accent': generateColors('#EC8787'),
         neutral: {
           light: generateColors('#ED8787'),
           dark: generateColors('#310303')
@@ -88,15 +88,13 @@ export default {
       },
       fontFamily: {
         sans: [
-          "Inter",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Ubuntu",
-          "sans-serif",
+          "var(--font-bebas-neue)",
+          "var(--font-lexend)",
+          "var(--font-jetbrains-mono)",
         ],
+        "bebas-neue": ["var(--font-bebas-neue)"],
+        "lexend": ["var(--font-lexend)"],
+        "jetbrains-mono": ["var(--font-jetbrains-mono)"],
       },
       keyframes: {
         ring: {
