@@ -47,9 +47,12 @@ const Hero = () => {
           <div className="relative">
             {/* Placeholder for main image - replace with actual image */}
             <div className="w-full h-96 bg-gradient-to-br from-secondary-200 to-primary-300 rounded-2xl shadow-2xl flex items-center justify-center">
-              <span className="text-neutral-dark-600 text-xl font-medium">
-                Imagen de Café Premium
-              </span>
+              <img
+                src="/images/bg-caffelia-header.png"
+                alt="Café Premium"
+                className="w-full h-full object-cover rounded-2xl"
+                style={{ maxHeight: '100%' }}
+              />
             </div>
 
             {/* Decorative accent */}
