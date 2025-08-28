@@ -84,7 +84,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ products, region }) =
                 </div>
               </div>
 
-              <p className="text-neutral-dark-700 text-base md:text-lg leading-relaxed font-medium">
+              <p className="text-neutral-dark-700 text-base md:text-lg leading-relaxed">
                 {description.description}
               </p>
               <h2 className="font-bold text-secondary-900 mb-2">Notas de Sabor</h2>

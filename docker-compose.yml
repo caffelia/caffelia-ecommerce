@@ -7,13 +7,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: caffelia_ecommerce
-      POSTGRES_USER: caffelia
+      POSTGRES_DB: caffelia_db
+      POSTGRES_USER: caffelia_db_user
       POSTGRES_PASSWORD: caffelia
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U caffelia -d caffelia_ecommerce"]
+      test: ["CMD-SHELL", "pg_isready -U caffelia_db_user -d caffelia_db"]
       interval: 10s
       timeout: 5s
       retries: 5
