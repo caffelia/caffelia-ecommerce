@@ -1,6 +1,7 @@
 import { HttpTypes } from "@medusajs/types"
 import ProductPreview from "../product-preview"
 import Image from "next/image"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 interface ProductShowcaseProps {
   products: HttpTypes.StoreProduct[]
@@ -99,9 +100,11 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ products, region }) =
                   ))}
                 </div>
                 <div className="flex">
-                <button className="w-1/2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                    Comprar Ahora
-                  </button>
+                  <LocalizedClientLink href={`/products/${product.handle}`} className="w-1/2">
+                    <button className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                      Comprar Ahora
+                    </button>
+                  </LocalizedClientLink>
                 </div>
 
               {/* Flavor Notes */}

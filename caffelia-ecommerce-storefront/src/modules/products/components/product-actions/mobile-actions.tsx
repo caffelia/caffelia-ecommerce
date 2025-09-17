@@ -21,6 +21,8 @@ type MobileActionsProps = {
   isAdding?: boolean
   show: boolean
   optionsDisabled: boolean
+  quantity: number
+  onQuantityChange: (quantity: number) => void
 }
 
 const MobileActions: React.FC<MobileActionsProps> = ({
@@ -33,6 +35,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   isAdding,
   show,
   optionsDisabled,
+  quantity,
+  onQuantityChange,
 }) => {
   const { state, open, close } = useToggleState()
 
@@ -189,6 +193,37 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                         })}
                       </div>
                     )}
+                    
+                    <div className="flex flex-col gap-y-3">
+                      <span className="text-sm font-medium text-ui-fg-base">Cantidad</span>
+                      <div className="flex items-center gap-x-3">
+                        <button
+                          onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
+                          className="w-10 h-10 rounded-lg border border-ui-border-base bg-ui-bg-subtle hover:bg-ui-bg-base transition-colors flex items-center justify-center text-lg font-medium"
+                          disabled={optionsDisabled}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          value={quantity}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value) || 1
+                            onQuantityChange(Math.max(1, value))
+                          }}
+                          className="w-16 h-10 text-center border border-ui-border-base bg-ui-bg-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          min="1"
+                          disabled={optionsDisabled}
+                        />
+                        <button
+                          onClick={() => onQuantityChange(quantity + 1)}
+                          className="w-10 h-10 rounded-lg border border-ui-border-base bg-ui-bg-subtle hover:bg-ui-bg-base transition-colors flex items-center justify-center text-lg font-medium"
+                          disabled={optionsDisabled}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
