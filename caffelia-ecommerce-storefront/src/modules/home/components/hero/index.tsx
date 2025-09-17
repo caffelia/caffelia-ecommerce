@@ -2,6 +2,7 @@ import { Button, Heading } from "@medusajs/ui"
 import Facebook from "@modules/common/icons/facebook"
 import Instagram from "@modules/common/icons/instagram"
 import Twitter from "@modules/common/icons/x"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 const Hero = () => {
   return (
@@ -32,12 +33,14 @@ const Hero = () => {
             </p>
 
             <div className="pt-4">
-              <Button
-                size="large"
-                className="bg-primary-800 hover:bg-primary-700 text-white px-8 py-4 text-lg font-medium rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                Comprar Ahora
-              </Button>
+              <LocalizedClientLink href="/store">
+                <Button
+                  size="large"
+                  className="bg-primary-800 hover:bg-primary-700 text-white px-8 py-4 text-lg font-medium rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  Comprar Ahora
+                </Button>
+              </LocalizedClientLink>
             </div>
           </div>
         </div>

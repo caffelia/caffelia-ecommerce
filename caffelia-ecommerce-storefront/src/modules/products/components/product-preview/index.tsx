@@ -1,3 +1,5 @@
+"use client"
+
 import { Text } from "@medusajs/ui"
 import { listProducts } from "@lib/data/products"
 import { getProductPrice } from "@lib/util/get-product-price"
@@ -7,7 +9,7 @@ import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
 import StarRating from "@modules/common/components/star-rating"
 
-export default async function ProductPreview({
+export default function ProductPreview({
   product,
   isFeatured,
   region,
@@ -20,8 +22,20 @@ export default async function ProductPreview({
     product,
   })
 
-  // Generate a realistic rating between 4.0 and 5.0 for coffee products
-  const rating = 4.0 + Math.random() * 1.0
+  // Generate a deterministic rating between 4.0 and 5.0 for coffee products
+  // Use product ID to create a consistent rating that's the same on server and client
+  const getDeterministicRating = (productId: string) => {
+    let hash = 0
+    for (let i = 0; i < productId.length; i++) {
+      const char = productId.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash // Convert to 32-bit integer
+    }
+    // Convert hash to a value between 0 and 1, then scale to 4.0-5.0
+    return 4.0 + (Math.abs(hash) % 100) / 100
+  }
+  
+  const rating = getDeterministicRating(product.id)
 
   return (
     <LocalizedClientLink href={`/products/${product.handle}`} className="group">
