@@ -16,6 +16,8 @@ type ProductActionsProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
   disabled?: boolean
+  quantity: number
+  onQuantityChange: (quantity: number) => void
 }
 
 const optionsAsKeymap = (
@@ -30,6 +32,8 @@ const optionsAsKeymap = (
 export default function ProductActions({
   product,
   disabled,
+  quantity,
+  onQuantityChange,
 }: ProductActionsProps) {
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
@@ -106,7 +110,7 @@ export default function ProductActions({
 
     await addToCart({
       variantId: selectedVariant.id,
-      quantity: 1,
+      quantity: quantity,
       countryCode,
     })
 
@@ -138,7 +142,38 @@ export default function ProductActions({
           )}
         </div>
 
-        <ProductPrice product={product} variant={selectedVariant} />
+
+
+        <div className="flex flex-col gap-y-3">
+          <span className="text-sm font-medium text-ui-fg-base">Cantidad</span>
+          <div className="flex items-center gap-x-3">
+            <button
+              onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
+              className="w-10 h-10 rounded-lg border border-ui-border-base bg-ui-bg-subtle hover:bg-ui-bg-base transition-colors flex items-center justify-center text-lg font-medium"
+              disabled={disabled}
+            >
+              -
+            </button>
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 1
+                onQuantityChange(Math.max(1, value))
+              }}
+              className="w-16 h-10 text-center border border-ui-border-base bg-ui-bg-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              min="1"
+              disabled={disabled}
+            />
+            <button
+              onClick={() => onQuantityChange(quantity + 1)}
+              className="w-10 h-10 rounded-lg border border-ui-border-base bg-ui-bg-subtle hover:bg-ui-bg-base transition-colors flex items-center justify-center text-lg font-medium"
+              disabled={disabled}
+            >
+              +
+            </button>
+          </div>
+        </div>
 
         <Button
           onClick={handleAddToCart}
@@ -150,7 +185,7 @@ export default function ProductActions({
             !isValidVariant
           }
           variant="primary"
-          className="w-full h-10"
+          className="w-full h-12 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold text-lg rounded-lg transition-colors duration-200"
           isLoading={isAdding}
           data-testid="add-product-button"
         >
@@ -170,6 +205,8 @@ export default function ProductActions({
           isAdding={isAdding}
           show={!inView}
           optionsDisabled={!!disabled || isAdding}
+          quantity={quantity}
+          onQuantityChange={onQuantityChange}
         />
       </div>
     </>
