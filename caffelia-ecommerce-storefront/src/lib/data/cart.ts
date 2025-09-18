@@ -221,6 +221,14 @@ export async function setShippingMethod({
   cartId: string
   shippingMethodId: string
 }) {
+  if (!cartId) {
+    throw new Error("Cart ID is required to set shipping method")
+  }
+
+  if (!shippingMethodId) {
+    throw new Error("Shipping method ID is required")
+  }
+
   const headers = {
     ...(await getAuthHeaders()),
   }
