@@ -1,6 +1,6 @@
 "use client"
 
-import { isManual, isStripe } from "@lib/constants"
+import { isManual, isStripe, isMercadoPago } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
@@ -30,6 +30,14 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     case isStripe(paymentSession?.provider_id):
       return (
         <StripePaymentButton
+          notReady={notReady}
+          cart={cart}
+          data-testid={dataTestId}
+        />
+      )
+    case isMercadoPago(paymentSession?.provider_id):
+      return (
+        <MercadoPagoPaymentButton
           notReady={notReady}
           cart={cart}
           data-testid={dataTestId}
@@ -146,6 +154,67 @@ const StripePaymentButton = ({
       <ErrorMessage
         error={errorMessage}
         data-testid="stripe-payment-error-message"
+      />
+    </>
+  )
+}
+
+const MercadoPagoPaymentButton = ({
+  cart,
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  cart: HttpTypes.StoreCart
+  notReady: boolean
+  "data-testid"?: string
+}) => {
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const onPaymentCompleted = async () => {
+    await placeOrder()
+      .catch((err) => {
+        setErrorMessage(err.message)
+      })
+      .finally(() => {
+        setSubmitting(false)
+      })
+  }
+
+  const handlePayment = async () => {
+    setSubmitting(true)
+
+    try {
+      const paymentSession = cart.payment_collection?.payment_sessions?.find(
+        (s) => s.status === "pending"
+      )
+
+      if (!paymentSession?.data?.init_point) {
+        throw new Error("No payment URL available")
+      }
+
+      // Redirect to MercadoPago checkout
+      window.location.href = paymentSession.data.init_point as string
+    } catch (err: any) {
+      setErrorMessage(err.message || "Error processing payment")
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <>
+      <Button
+        disabled={notReady}
+        isLoading={submitting}
+        onClick={handlePayment}
+        size="large"
+        data-testid={dataTestId}
+      >
+        Pay with MercadoPago
+      </Button>
+      <ErrorMessage
+        error={errorMessage}
+        data-testid="mercadopago-payment-error-message"
       />
     </>
   )
