@@ -105,7 +105,13 @@ const ShippingAddress = ({
         "/store/geo/departments",
         { method: "GET" }
       )
-      .then((data) => setDepartments(data.departments || []))
+      .then((data) => {
+        // Sort departments alphabetically by name
+        const sortedDepartments = (data.departments || []).sort((a, b) => 
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        )
+        setDepartments(sortedDepartments)
+      })
       .catch(() => setDepartments([]))
   }, [])
 
@@ -120,7 +126,13 @@ const ShippingAddress = ({
         "/store/geo/municipalities",
         { method: "GET", query: { dept_code: selectedDept } as any }
       )
-      .then((data) => setMunicipalities(data.municipalities || []))
+      .then((data) => {
+        // Sort municipalities alphabetically by name
+        const sortedMunicipalities = (data.municipalities || []).sort((a, b) => 
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        )
+        setMunicipalities(sortedMunicipalities)
+      })
       .catch(() => setMunicipalities([]))
   }, [selectedDept])
 
@@ -207,7 +219,7 @@ const ShippingAddress = ({
           >
             {departments.map((d) => (
               <option key={d.dept_code} value={d.dept_code}>
-                {d.name}
+                {d.name.charAt(0).toUpperCase() + d.name.slice(1).toLowerCase()}
               </option>
             ))}
           </NativeSelect>
@@ -226,7 +238,7 @@ const ShippingAddress = ({
           >
             {municipalities.map((m) => (
               <option key={m.muni_code} value={m.muni_code}>
-                {m.name}
+                {m.name.charAt(0).toUpperCase() + m.name.slice(1).toLowerCase()}
               </option>
             ))}
           </NativeSelect>
