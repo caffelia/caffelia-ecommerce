@@ -13,27 +13,57 @@ const CartTemplate = ({
   customer: HttpTypes.StoreCustomer | null
 }) => {
   return (
-    <div className="py-12">
-      <div className="content-container" data-testid="cart-container">
+    <div className="min-h-screen bg-gray-50">
+      <div className="content-container py-6 sm:py-8 lg:py-12" data-testid="cart-container">
         {cart?.items?.length ? (
-          <div className="grid grid-cols-1 small:grid-cols-[1fr_360px] gap-x-40">
-            <div className="flex flex-col bg-white py-6 gap-y-6">
+          <div className="space-y-6 lg:space-y-0">
+            {/* Mobile Layout */}
+            <div className="lg:hidden space-y-6">
+              {/* Sign In Prompt - Mobile */}
               {!customer && (
-                <>
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                   <SignInPrompt />
-                  <Divider />
-                </>
+                </div>
               )}
-              <ItemsTemplate cart={cart} />
+              
+              {/* Cart Items - Mobile */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <ItemsTemplate cart={cart} />
+              </div>
+              
+              {/* Summary - Mobile */}
+              {cart && cart.region && (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <Summary cart={cart as any} />
+                </div>
+              )}
             </div>
-            <div className="relative">
-              <div className="flex flex-col gap-y-8 sticky top-12">
+
+            {/* Desktop Layout */}
+            <div className="hidden lg:grid lg:grid-cols-12 lg:gap-8">
+              {/* Left Column - Cart Items */}
+              <div className="lg:col-span-8 space-y-6">
+                {/* Sign In Prompt - Desktop */}
+                {!customer && (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <SignInPrompt />
+                  </div>
+                )}
+                
+                {/* Cart Items - Desktop */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <ItemsTemplate cart={cart} />
+                </div>
+              </div>
+              
+              {/* Right Column - Summary */}
+              <div className="lg:col-span-4">
                 {cart && cart.region && (
-                  <>
-                    <div className="bg-white py-6">
+                  <div className="sticky top-6">
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                       <Summary cart={cart as any} />
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             </div>

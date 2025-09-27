@@ -161,7 +161,7 @@ export default function ProductActions({
                 const value = parseInt(e.target.value) || 1
                 onQuantityChange(Math.max(1, value))
               }}
-              className="w-16 h-10 text-center border border-ui-border-base bg-ui-bg-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="flex justify-center align-middle w-16 h-10 text-center border border-ui-border-base bg-ui-bg-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               min="1"
               disabled={disabled}
             />
@@ -185,7 +185,7 @@ export default function ProductActions({
             !isValidVariant
           }
           variant="primary"
-          className="w-full h-12 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold text-lg rounded-lg transition-colors duration-200"
+          className="w-full h-12 bg-primary-500 hover:bg-primary-600 text-white font-semibold text-lg rounded-lg transition-colors duration-200"
           isLoading={isAdding}
           data-testid="add-product-button"
         >

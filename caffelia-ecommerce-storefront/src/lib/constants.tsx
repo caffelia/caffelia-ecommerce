@@ -13,23 +13,27 @@ export const paymentInfoMap: Record<
 > = {
   pp_stripe_stripe: {
     title: "Credit card",
-    icon: <MercadoPagoMethods size="32" />,
+    icon: <CreditCard size="32" />,
   },
   "pp_stripe-ideal_stripe": {
     title: "iDeal",
-    icon: <MercadoPagoMethods size="32" />,
+    icon: <CreditCard size="32" />,
   },
   "pp_stripe-bancontact_stripe": {
     title: "Bancontact",
-    icon: <MercadoPagoMethods size="32" />,
+    icon: <CreditCard size="32" />,
   },
   pp_paypal_paypal: {
     title: "PayPal",
+    icon: <CreditCard size="32" />,
+  },
+  pp_mercadopago_mercadopago: {
+    title: "MercadoPago",
     icon: <MercadoPagoMethods size="32" />,
   },
   pp_system_default: {
     title: "Manual Payment",
-    icon: <MercadoPagoMethods size="32" />,
+    icon: <CreditCard size="32" />,
   },
   // Add more payment providers here
 }
@@ -43,6 +47,9 @@ export const isPaypal = (providerId?: string) => {
 }
 export const isManual = (providerId?: string) => {
   return providerId?.startsWith("pp_system_default")
+}
+export const isMercadoPago = (providerId?: string) => {
+  return providerId?.startsWith("pp_mercadopago_")
 }
 
 // Add currencies that don't need to be divided by 100

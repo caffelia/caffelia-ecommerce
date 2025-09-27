@@ -1,7 +1,7 @@
 "use client"
 
 import { RadioGroup } from "@headlessui/react"
-import { isStripe as isStripeFunc, paymentInfoMap } from "@lib/constants"
+import { isStripe as isStripeFunc, isMercadoPago as isMercadoPagoFunc, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import { Button, Container, Heading, Text, clx } from "@medusajs/ui"
@@ -43,7 +43,7 @@ const Payment = ({
   const setPaymentMethod = async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
-    if (isStripeFunc(method)) {
+    if (isStripeFunc(method) || isMercadoPagoFunc(method)) {
       await initiatePaymentSession(cart, {
         provider_id: method,
       })
@@ -76,7 +76,7 @@ const Payment = ({
     setIsLoading(true)
     try {
       const shouldInputCard =
-        isStripeFunc(selectedPaymentMethod) && !activeSession
+        (isStripeFunc(selectedPaymentMethod) || isMercadoPagoFunc(selectedPaymentMethod)) && !activeSession
 
       const checkActiveSession =
         activeSession?.provider_id === selectedPaymentMethod
@@ -196,7 +196,7 @@ const Payment = ({
             }
             data-testid="submit-payment-button"
           >
-            {!activeSession && isStripeFunc(selectedPaymentMethod)
+            {!activeSession && (isStripeFunc(selectedPaymentMethod) || isMercadoPagoFunc(selectedPaymentMethod))
               ? " Ingresar detalles de tarjeta"
               : "Continuar a revisión"}
           </Button>
@@ -231,7 +231,7 @@ const Payment = ({
                     )}
                   </Container>
                   <Text>
-                    {isStripeFunc(selectedPaymentMethod) && cardBrand
+                    {(isStripeFunc(selectedPaymentMethod) || isMercadoPagoFunc(selectedPaymentMethod)) && cardBrand
                       ? cardBrand
                       : "Another step will appear"}
                   </Text>

@@ -25,7 +25,7 @@ export default async function Footer() {
           <div className="flex flex-col gap-y-4">
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus text-[#d57a44] hover:text-ui-fg-base uppercase"
+              className="txt-compact-xlarge-plus text-primary-500 hover:text-ui-fg-base uppercase"
             >
               Caffelia
             </LocalizedClientLink>
