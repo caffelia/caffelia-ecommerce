@@ -24,10 +24,9 @@ const ShippingAddress = ({
     "shipping_address.first_name": cart?.shipping_address?.first_name || "",
     "shipping_address.last_name": cart?.shipping_address?.last_name || "",
     "shipping_address.address_1": cart?.shipping_address?.address_1 || "",
-    "shipping_address.company": cart?.shipping_address?.company || "",
     "shipping_address.postal_code": cart?.shipping_address?.postal_code || "",
     "shipping_address.city": cart?.shipping_address?.city || "",
-    "shipping_address.country_code": cart?.shipping_address?.country_code || "",
+    "shipping_address.country_code": cart?.shipping_address?.country_code || "co",
     "shipping_address.province": cart?.shipping_address?.province || "",
     "shipping_address.phone": cart?.shipping_address?.phone || "",
     "shipping_address.metadata.barrio":
@@ -70,10 +69,9 @@ const ShippingAddress = ({
         "shipping_address.first_name": address?.first_name || "",
         "shipping_address.last_name": address?.last_name || "",
         "shipping_address.address_1": address?.address_1 || "",
-        "shipping_address.company": address?.company || "",
         "shipping_address.postal_code": address?.postal_code || "",
         "shipping_address.city": address?.city || "",
-        "shipping_address.country_code": address?.country_code || "",
+        "shipping_address.country_code": address?.country_code || "co",
         "shipping_address.province": address?.province || "",
         "shipping_address.phone": address?.phone || "",
         "shipping_address.metadata.barrio": (address as any)?.metadata?.barrio || "",
@@ -166,9 +164,9 @@ const ShippingAddress = ({
           />
         </Container>
       )}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
-          label="First name"
+          label="Nombre"
           name="shipping_address.first_name"
           autoComplete="given-name"
           value={formData["shipping_address.first_name"]}
@@ -177,7 +175,7 @@ const ShippingAddress = ({
           data-testid="shipping-first-name-input"
         />
         <Input
-          label="Last name"
+          label="Apellido"
           name="shipping_address.last_name"
           autoComplete="family-name"
           value={formData["shipping_address.last_name"]}
@@ -185,28 +183,20 @@ const ShippingAddress = ({
           required
           data-testid="shipping-last-name-input"
         />
-        <Input
-          label="Address"
-          name="shipping_address.address_1"
-          autoComplete="address-line1"
-          value={formData["shipping_address.address_1"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-address-input"
-        />
-        {/* 1) Country */}
-        <CountrySelect
-          name="shipping_address.country_code"
-          autoComplete="country"
-          region={cart?.region}
-          value={formData["shipping_address.country_code"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-country-select"
-        />
+        <div className="col-span-1 md:col-span-2">
+          <Input
+            label="Dirección"
+            name="shipping_address.address_1"
+            autoComplete="address-line1"
+            value={formData["shipping_address.address_1"]}
+            onChange={handleChange}
+            required
+            data-testid="shipping-address-input"
+          />
+        </div>
         {/* 2) Department */}
         <div>
-          <label className="text-small-regular mb-1 block">Departamento</label>
+          <label className="text-small-regular mb-1 block text-xs md:text-sm">Departamento</label>
           <NativeSelect
             name="shipping_address.metadata.dept_code"
             value={selectedDept}
@@ -224,12 +214,12 @@ const ShippingAddress = ({
         </div>
         {/* 3) City */}
         <div>
-          <label className="text-small-regular mb-1 block">Ciudad</label>
+          <label className="text-small-regular mb-1 block text-xs md:text-sm">Ciudad</label>
           <NativeSelect
             name="shipping_address.metadata.muni_code"
             value={selectedMuni}
             onChange={handleChange}
-            placeholder={selectedDept ? "Seleccionar..." : "Seleccione un departamento primero"}
+            placeholder={selectedDept ? "Seleccionar..." : "Seleccione departamento"}
             required
             disabled={!selectedDept}
             data-testid="shipping-muni-select"
@@ -259,7 +249,7 @@ const ShippingAddress = ({
         />
         {/* 6) Postal code */}
         <Input
-          label="Postal code"
+          label="Código postal"
           name="shipping_address.postal_code"
           autoComplete="postal-code"
           value={formData["shipping_address.postal_code"]}
@@ -267,31 +257,24 @@ const ShippingAddress = ({
           required
           data-testid="shipping-postal-code-input"
         />
-        {/* Company (kept after prioritized fields) */}
-        <Input
-          label="Company"
-          name="shipping_address.company"
-          value={formData["shipping_address.company"]}
-          onChange={handleChange}
-          autoComplete="organization"
-          data-testid="shipping-company-input"
-        />
-        {/* Hidden city/province inputs still present in form submission */}
+        {/* Hidden city/province/country/company inputs still present in form submission */}
         <input type="hidden" name="shipping_address.city" value={formData["shipping_address.city"]} />
         <input type="hidden" name="shipping_address.province" value={formData["shipping_address.province"]} />
+        <input type="hidden" name="shipping_address.country_code" value={formData["shipping_address.country_code"]} />
+        <input type="hidden" name="shipping_address.company" value="" />
       </div>
       <div className="my-8">
         <Checkbox
-          label="Billing address same as shipping address"
+          label="La dirección de facturación es la misma que la de envío"
           name="same_as_billing"
           checked={checked}
           onChange={onChange}
           data-testid="billing-address-checkbox"
         />
       </div>
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <Input
-          label="Email"
+          label="Correo electrónico"
           name="email"
           type="email"
           title="Enter a valid email address."
@@ -302,7 +285,7 @@ const ShippingAddress = ({
           data-testid="shipping-email-input"
         />
         <Input
-          label="Phone"
+          label="Teléfono"
           name="shipping_address.phone"
           autoComplete="tel"
           value={formData["shipping_address.phone"]}
