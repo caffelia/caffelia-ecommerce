@@ -233,7 +233,7 @@ const Payment = ({
                   <Text>
                     {(isStripeFunc(selectedPaymentMethod) || isMercadoPagoFunc(selectedPaymentMethod)) && cardBrand
                       ? cardBrand
-                      : "Another step will appear"}
+                      : ""}
                   </Text>
                 </div>
               </div>
